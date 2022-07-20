@@ -1,6 +1,7 @@
 {
     "name": "monkeypod/api",
     "description": "PHP SDK for interacting with the MonkeyPod API",
+    "license": "MIT",
     "authors": [
         {
             "name": "Adam Huttler",
