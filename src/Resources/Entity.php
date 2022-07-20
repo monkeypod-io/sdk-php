@@ -20,9 +20,9 @@ class Entity implements Resource
      * @throws IncompleteConfigurationException
      * @throws ApiResponseError
      */
-    public function retrieve($uuid): static
+    public static function retrieve($uuid): static
     {
-        return Client::retrieve(self::class, $uuid);
+        return Client::singleton()->retrieve(self::class, $uuid);
     }
 
     /**

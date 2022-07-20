@@ -22,14 +22,9 @@ class Client
 
     protected string $apiKey;
 
-    protected \GuzzleHttp\Client $guzzle;
+    protected string $apiBase = "https://monkeypod.io";
 
     private static Client $singleton;
-
-    public function __construct()
-    {
-        $this->guzzle = new \GuzzleHttp\Client();
-    }
 
     public function setVersion(string|int $version): static
     {
@@ -48,6 +43,13 @@ class Client
     public function setApiKey(string $apiKey): static
     {
         $this->apiKey = $apiKey;
+
+        return $this;
+    }
+
+    public function setApiBase(string $url): static
+    {
+        $this->apiBase = $url;
 
         return $this;
     }
@@ -95,7 +97,9 @@ class Client
     {
         $this->confirmConfigured();
 
-        return "https://{$this->subdomain}.monkeypod.io/api/{$this->version}/";
+        $domain = str($this->apiBase)->replaceFirst("//", "//{$this->subdomain}.");
+
+        return "$domain/api/{$this->version}/";
     }
 
     /**
@@ -103,21 +107,22 @@ class Client
      */
     public function confirmConfigured(): static
     {
-        if (! isset($this->version, $this->subdomain, $this->apiKey)) {
+        if (! isset($this->version, $this->subdomain, $this->apiKey, $this->apiBase)) {
             throw new IncompleteConfigurationException();
         }
 
         return $this;
     }
 
-    public static function configure(string $apiKey, string $subdomain, string $version = null): static
+    public static function configure(string $apiKey, string $subdomain, string $version = null, string $apiBase = null): static
     {
         self::$singleton = new static;
 
         return self::$singleton
             ->setApiKey($apiKey)
             ->setSubdomain($subdomain)
-            ->setVersion($version ?? self::$singleton->version);
+            ->setVersion($version ?? self::$singleton->version)
+            ->setApiBase($apiBase ?? self::$singleton->apiBase);
     }
 
     public static function __callStatic(string $name, array $arguments)
