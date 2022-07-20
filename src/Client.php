@@ -2,8 +2,8 @@
 
 namespace MonkeyPod\Api;
 
+use Illuminate\Http\Client\Factory as HttpClient;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
 use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
 use MonkeyPod\Api\Exception\InvalidResourceException;
@@ -22,7 +22,14 @@ class Client
 
     protected string $apiKey;
 
+    protected \GuzzleHttp\Client $guzzle;
+
     private static Client $singleton;
+
+    public function __construct()
+    {
+        $this->guzzle = new \GuzzleHttp\Client();
+    }
 
     public function setVersion(string|int $version): static
     {
@@ -64,7 +71,8 @@ class Client
 
         $endpoint = $resourceClass::getEndpoint($this, ...$parameters);
 
-        $response = Http::withToken($this->apiKey)
+        $response = (new HttpClient())
+            ->withToken($this->apiKey)
             ->get($endpoint)
             ->onError(function (Response $response) {
                 throw (new ApiResponseError())
