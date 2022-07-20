@@ -93,7 +93,7 @@ class Client
     /**
      * @throws IncompleteConfigurationException
      */
-    protected function confirmConfigured(): static
+    public function confirmConfigured(): static
     {
         if (! isset($this->version, $this->subdomain, $this->apiKey)) {
             throw new IncompleteConfigurationException();
@@ -120,7 +120,7 @@ class Client
     /**
      * @throws IncompleteConfigurationException
      */
-    private static function singleton(): static
+    public static function singleton(): static
     {
         if (! isset(self::$singleton)) {
             throw new IncompleteConfigurationException();
