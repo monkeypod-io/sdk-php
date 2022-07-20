@@ -1,0 +1,47 @@
+{
+  "id": "960a735b-3ee9-4440-9c6d-25cbf27c77fe",
+  "resource": "entity",
+  "data":{
+    "id": "960a735b-3ee9-4440-9c6d-25cbf27c77fe",
+    "type": "Individual",
+    "honorific": "Ms.",
+    "first_name": "Jane",
+    "middle_name": "Q.",
+    "last_name": "Smith",
+    "pronouns": "she/her/they",
+    "aliases": [
+      "Jane the Great"
+    ],
+    "title": "CEO",
+    "organization_name": "Jane's Awesome Business",
+    "website": "https://example.com",
+    "email": "jane.q.smith@example.com",
+    "address": "123 Main Street",
+    "city": "Anytown",
+    "state": "CA",
+    "postal_code": "99999-9999",
+    "country": "United States",
+    "extra_attributes": {
+      "alma-mater": "Stanford University",
+      "favorite-color": "blue"
+    },
+    "created_at": "2022-05-16T18:38:31.000000Z",
+    "updated_at": "2022-05-16T18:38:31.000000Z",
+    "phones": [
+      {
+        "id": "96508708-ba4b-4b92-b577-e6ee7cdf951c",
+        "type": "Home",
+        "number": "888-555-1212"
+      },
+      {
+        "id": "96508708-ba4b-4b92-b577-e6ee7cdf951d",
+        "type": "Cell",
+        "number": "999-666-2323"
+      }
+    ],
+    "roles": [
+      "Customer",
+      "Donor"
+    ]
+  }
+}

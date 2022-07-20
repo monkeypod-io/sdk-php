@@ -9,25 +9,27 @@ use MonkeyPod\Api\Resources\EntityPhone;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
-class EntityRetrieveTest extends TestCase
+class EntityCreateTest extends TestCase
 {
     /**
      * @noinspection PhpUnhandledExceptionInspection
      */
     public function testRetrievesAnEntityWithNestedResources()
     {
-        $uuid = Uuid::uuid4()->toString();
-
         $responseData = json_decode(file_get_contents(__DIR__ . "/json/entity.json"), true);
 
         Client::configure("fake-api-key", "fake-subdomain")
             ->httpClient()
             ->preventStrayRequests()
             ->fake([
-                "fake-subdomain.monkeypod.io/api/v2/entities/$uuid" => (new Factory())->response($responseData),
+                "fake-subdomain.monkeypod.io/api/v2/entities" => (new Factory())->response($responseData),
             ]);
 
-        $entity = Entity::retrieve($uuid);
+        $data = $responseData["data"];
+        unset($data['created_at']);
+        unset($data['updated_at']);
+
+        $entity = Entity::create($data);
 
         $this->assertInstanceOf(Entity::class, $entity);
 

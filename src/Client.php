@@ -12,10 +12,6 @@ use MonkeyPod\Api\Resources\Entity;
 
 class Client
 {
-    public static array $resourceAliases = [
-        'entity' => Entity::class,
-    ];
-
     protected string $version = "v2";
 
     protected string $subdomain;
@@ -24,7 +20,14 @@ class Client
 
     protected string $apiBase = "https://monkeypod.io";
 
+    protected HttpClient $httpClient;
+
     private static Client $singleton;
+
+    public function __construct()
+    {
+        $this->httpClient = new HttpClient();
+    }
 
     public function setVersion(string|int $version): static
     {
@@ -63,17 +66,13 @@ class Client
     {
         $this->confirmConfigured();
 
-        if (! class_exists($resourceClass) && isset(self::$resourceAliases[$resourceClass])) {
-            $resourceClass = self::$resourceAliases[$resourceClass];
-        }
-
         if (! is_a($resourceClass, Resource::class, true)) {
             throw new InvalidResourceException();
         }
 
         $endpoint = $resourceClass::getEndpoint($this, ...$parameters);
 
-        $response = (new HttpClient())
+        $response = $this->httpClient
             ->withToken($this->apiKey)
             ->get($endpoint)
             ->onError(function (Response $response) {
@@ -83,12 +82,46 @@ class Client
             })
             ->json();
 
+        /** @var Resource $resource */
         $resource = new $resourceClass;
-        $resource->setData(null, $response);
+        $resource->set(null, $response['data']);
+        $resource->hydrateNestedResources();
 
         return $resource;
     }
 
+    /**
+     * @throws IncompleteConfigurationException
+     * @throws InvalidResourceException
+     * @throws ApiResponseError
+     */
+    public function create(string $resourceClass, array $data): Resource
+    {
+        $this->confirmConfigured();
+
+        if (! is_a($resourceClass, Resource::class, true)) {
+            throw new InvalidResourceException();
+        }
+
+        $endpoint = $resourceClass::getEndpoint($this);
+
+        $response = $this->httpClient
+            ->withToken($this->apiKey)
+            ->post($endpoint, $data)
+            ->onError(function (Response $response) {
+                throw (new ApiResponseError())
+                    ->setHttpStatus($response->status())
+                    ->setErrors($response->json("errors", []));
+            })
+            ->json();
+
+        /** @var Resource $resource */
+        $resource = new $resourceClass;
+        $resource->set(null, $response['data']);
+        $resource->hydrateNestedResources();
+
+        return $resource;
+    }
 
     /**
      * @throws IncompleteConfigurationException
@@ -112,6 +145,11 @@ class Client
         }
 
         return $this;
+    }
+
+    public function httpClient(): HttpClient
+    {
+        return $this->httpClient;
     }
 
     public static function configure(string $apiKey, string $subdomain, string $version = null, string $apiBase = null): static

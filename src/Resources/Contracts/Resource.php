@@ -10,5 +10,7 @@ use MonkeyPod\Api\Resources\Concerns\ActsAsResource;
  */
 interface Resource
 {
+    public function hydrateNestedResources(): void;
+
     public static function getEndpoint(Client $client, ...$parameters): string;
 }

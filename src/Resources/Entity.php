@@ -11,9 +11,22 @@ use MonkeyPod\Api\Exception\InvalidUuidException;
 use MonkeyPod\Api\Resources\Concerns\ActsAsResource;
 use MonkeyPod\Api\Resources\Contracts\Resource;
 
+/**
+ * @property array&EntityPhone[] $phones
+ */
 class Entity implements Resource
 {
     use ActsAsResource;
+
+    public function hydrateNestedResources(): void
+    {
+        foreach ($this->get("phones") ?? [] as $key => $value) {
+            $phone = new EntityPhone($value['id']);
+            $phone->set(null, $value);
+
+            $this->set("phones.$key", $phone);
+        }
+    }
 
     /**
      * @throws InvalidResourceException
@@ -26,16 +39,30 @@ class Entity implements Resource
     }
 
     /**
+     * @throws ApiResponseError
+     * @throws IncompleteConfigurationException
+     * @throws InvalidResourceException
+     */
+    public static function create(array $data): static
+    {
+        return Client::singleton()->create(self::class, $data);
+    }
+
+    /**
      * @throws IncompleteConfigurationException
      * @throws InvalidUuidException
      */
     public static function getEndpoint(Client $client, ...$parameters): string
     {
-        $uuid = $parameters[0];
-        if (! Str::isUuid($uuid)) {
-            throw new InvalidUuidException();
+        if (count($parameters)) {
+            $uuid = $parameters[0];
+            if (! Str::isUuid($uuid)) {
+                throw new InvalidUuidException();
+            }
+
+            return $client->getBaseUri() . "entities/{$uuid}";
         }
 
-        return $client->getBaseUri() . "entities/{$uuid}";
+        return $client->getBaseUri() . "entities";
     }
 }
