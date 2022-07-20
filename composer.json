@@ -1,0 +1,22 @@
+{
+    "name": "monkeypod/api",
+    "description": "PHP SDK for interacting with the MonkeyPod API",
+    "authors": [
+        {
+            "name": "Adam Huttler",
+            "email": "adam@monkeypod.io"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "MonkeyPod\\Api\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MonkeyPod\\Api\\Tests\\": "tests"
+        }
+    }
+}
