@@ -20,7 +20,7 @@ class Client
 
     protected string $apiKey;
 
-    protected string $apiBase = "https://monkeypod.io";
+    protected string $apiHost = "https://monkeypod.io";
 
     protected HttpClient $httpClient;
 
@@ -54,44 +54,11 @@ class Client
         return $this;
     }
 
-    public function setApiBase(string $url): static
+    public function setApiHost(string $url): static
     {
-        $this->apiBase = $url;
+        $this->apiHost = $url;
 
         return $this;
-    }
-
-    /**
-     * @throws IncompleteConfigurationException
-     * @throws InvalidResourceException
-     * @throws ApiResponseError
-     */
-    public function retrieve(string $resourceClass, ...$parameters): Resource
-    {
-        $this->confirmConfigured();
-
-        if (! is_a($resourceClass, Resource::class, true)) {
-            throw new InvalidResourceException();
-        }
-
-        $endpoint = $resourceClass::getEndpoint($this, ...$parameters);
-
-        $response = $this->httpClient
-            ->withToken($this->apiKey)
-            ->get($endpoint)
-            ->onError(function (Response $response) {
-                throw (new ApiResponseError())
-                    ->setHttpStatus($response->status())
-                    ->setErrors($response->json("errors", []));
-            })
-            ->json();
-
-        /** @var Resource $resource */
-        $resource = new $resourceClass;
-        $resource->set(null, $response['data']);
-        $resource->hydrateNestedResources();
-
-        return $resource;
     }
 
     /**
@@ -101,7 +68,7 @@ class Client
     {
         $this->confirmConfigured();
 
-        $domain = str($this->apiBase)->replaceFirst("//", "//{$this->subdomain}.");
+        $domain = str($this->apiHost)->replaceFirst("//", "//{$this->subdomain}.");
 
         return "$domain/api/{$this->version}/";
     }
@@ -111,7 +78,7 @@ class Client
      */
     public function confirmConfigured(): static
     {
-        if (! isset($this->version, $this->subdomain, $this->apiKey, $this->apiBase)) {
+        if (! isset($this->version, $this->subdomain, $this->apiKey, $this->apiHost)) {
             throw new IncompleteConfigurationException();
         }
 
@@ -172,7 +139,7 @@ class Client
             ->setApiKey($apiKey)
             ->setSubdomain($subdomain)
             ->setVersion($version ?? self::$singleton->version)
-            ->setApiBase($apiBase ?? self::$singleton->apiBase);
+            ->setApiHost($apiBase ?? self::$singleton->apiHost);
     }
 
     public function verifySsl(bool $verify = true): static
