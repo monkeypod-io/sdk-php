@@ -66,6 +66,34 @@ trait ActsAsResource
         return $this;
     }
 
+    /**
+     * @throws IncompleteConfigurationException
+     * @throws ApiResponseError
+     */
+    public function update(array $data = []): static
+    {
+        $endpoint = $this->getSpecificEndpoint();
+        $data = array_merge_recursive($this->data, $data);
+
+        $this->data = $this->apiClient->put($endpoint, $data)['data'];
+        $this->hydrateNestedResources();
+
+        return $this;
+    }
+
+    /**
+     * @throws IncompleteConfigurationException
+     * @throws ApiResponseError
+     */
+    public function delete(): static
+    {
+        $endpoint = $this->getSpecificEndpoint();
+
+        $this->apiClient->delete($endpoint);
+
+        return $this;
+    }
+
     public function set($dotpath, $value): static
     {
         if (null === $dotpath) {

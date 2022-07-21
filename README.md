@@ -32,12 +32,14 @@ $subdomain = "my-organization-subdomain";
 Client::configure($apiKey, $subdomain);
 
 // Alternatively, dynamic configuration scopes the configuration
-// to the specific client object. If you use this approach, you'll
-// need to pass the client in the constructor of any resources.
+// to the specific client object. 
 
 $client = new Client();
 $client->setApiKey($apiKey);
 $client->setSubdomain($subdomain);
+
+// If you use this approach, you'll need to pass the client in
+// the constructor of any resources.
 
 $entity = new \MonkeyPod\Api\Resources\Entity($client);
 ```
@@ -86,14 +88,14 @@ $person->create();
  * to associate it with a data record in your application that corresponds
  * or relates to the created entity.
  */
-$id = $entity->id;
+$entity->id;
 ```
 
 #### Retrieve a Relationship
 ```php 
 use MonkeyPod\Api\Resources\Entity;
 
-$idFromPreviousApiCall = "960a735b-3ee9-4440-9c6d-25cbf27c77fe";
+$idFromPreviousApiCall = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
 $person = new Entity($idFromPreviousApiCall);
 $person->retrieve();
 
@@ -102,11 +104,42 @@ $person->first_name; // Jane
 
 #### Update a Relationship
 
-COMING SOON.
+```php 
+use MonkeyPod\Api\Resources\Entity;
+
+$id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
+
+// The Entity object must know the ID of the API resource 
+
+$person = new Entity($id);
+
+// Update requests combine all populated data with any additional data 
+// that is included in the update() call. 
+
+$person->first_name = "John";
+$person->update([
+    'last_name' => 'Jones'
+]);
+
+$nowNamedJohn = new Entity($id);
+$nowNamedJohn->retrieve();
+$nowNamedJohn->first_name; // John
+$nowNamedJohn->last_name;  // Jones
+```
 
 #### Delete (or Deactivate) a Relationship
 
-COMING SOON.
+```php 
+use MonkeyPod\Api\Resources\Entity;
+
+$id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
+$person = new Entity($id);
+$person->delete();
+
+// An entity will only be deleted in MonkeyPod if that can be done 
+// without violating data integrity. If the entity has associated 
+// transactions or other data, it will be deactivated instead.  
+```
 
 ## Custom Attributes
 

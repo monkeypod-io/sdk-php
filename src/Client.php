@@ -141,6 +141,54 @@ class Client
             ->json();
     }
 
+    /**
+     * @throws ApiResponseError
+     */
+    public function put($endpoint, array $data): ?array
+    {
+        if ($this->testMode) {
+            return $this->putTest($endpoint, $data);
+        }
+
+        return $this->httpClient
+            ->withToken($this->apiKey)
+            ->acceptJson()
+            ->withOptions(['verify' => $this->verifySsl])
+            ->put($endpoint, $data)
+            ->onError(function (Response $response) {
+                throw match ($response->status()) {
+                    404 => new ResourceNotFoundException(),
+                    422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+                    default => (new ApiResponseError())->setHttpStatus($response->status()),
+                };
+            })
+            ->json();
+    }
+
+    /**
+     * @throws ApiResponseError
+     */
+    public function delete($endpoint): ?array
+    {
+        if ($this->testMode) {
+            return $this->deleteTest($endpoint);
+        }
+
+        return $this->httpClient
+            ->withToken($this->apiKey)
+            ->acceptJson()
+            ->withOptions(['verify' => $this->verifySsl])
+            ->delete($endpoint)
+            ->onError(function (Response $response) {
+                throw match ($response->status()) {
+                    404 => new ResourceNotFoundException(),
+                    422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+                    default => (new ApiResponseError())->setHttpStatus($response->status()),
+                };
+            })
+            ->json();
+    }
+
     public static function configure(string $apiKey, string $subdomain, string $version = null, string $apiHost = null): static
     {
         self::$singleton = new static;
@@ -180,6 +228,22 @@ class Client
         return $this->testClient
             ->withToken($this->apiKey)
             ->postJson($endpoint, $data)
+            ->json();
+    }
+
+    protected function putTest($endpoint, array $data): ?array
+    {
+        return $this->testClient
+            ->withToken($this->apiKey)
+            ->putJson($endpoint, $data)
+            ->json();
+    }
+
+    protected function deleteTest($endpoint): ?array
+    {
+        return $this->testClient
+            ->withToken($this->apiKey)
+            ->deleteJson($endpoint)
             ->json();
     }
 
