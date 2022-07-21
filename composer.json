@@ -14,6 +14,7 @@
         "guzzlehttp/guzzle": "^7.4"
     },
     "require-dev": {
+        "illuminate/testing": ">=8",
         "phpunit/phpunit": "^9.5",
         "ramsey/uuid": "^4.3"
     },

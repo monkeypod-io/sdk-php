@@ -2,15 +2,14 @@
 
 namespace MonkeyPod\Api;
 
+use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Http\Client\Factory as HttpClient;
 use Illuminate\Http\Client\Response;
 use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
 use MonkeyPod\Api\Exception\InvalidRequestException;
-use MonkeyPod\Api\Exception\InvalidResourceException;
 use MonkeyPod\Api\Exception\ResourceNotFoundException;
-use MonkeyPod\Api\Resources\Contracts\Resource;
-use MonkeyPod\Api\Resources\Entity;
+use MonkeyPod\Api\Tests\TestClient;
 
 class Client
 {
@@ -26,6 +25,10 @@ class Client
 
     protected bool $verifySsl = true;
 
+    protected bool $testMode = false;
+
+    private TestCase $laravelTestCase;
+    
     private static Client $singleton;
 
     public function __construct()
@@ -95,6 +98,10 @@ class Client
      */
     public function get($endpoint): ?array
     {
+        if ($this->testMode) {
+            return $this->getTest($endpoint);
+        }
+
         return $this->httpClient
             ->withToken($this->apiKey)
             ->acceptJson()
@@ -116,6 +123,10 @@ class Client
      */
     public function post($endpoint, array $data): ?array
     {
+        if ($this->testMode) {
+            return $this->postTest($endpoint, $data);
+        }
+
         return $this->httpClient
             ->withToken($this->apiKey)
             ->acceptJson()
@@ -147,6 +158,38 @@ class Client
         $this->verifySsl = $verify;
 
         return $this;
+    }
+
+    /**
+     * Can be used to substitute a Laravel test case
+     * instead of the real Http client.
+     * 
+     * @param TestCase $testCase
+     * @return $this
+     */
+    public function withLaravelTestCase($testCase): static
+    {
+        $this->testMode = true;
+        $this->verifySsl = false;
+        $this->testClient = $testCase;
+
+        return $this;
+    }
+
+    protected function postTest($endpoint, array $data): ?array
+    {
+        return $this->testClient
+            ->withToken($this->apiKey)
+            ->postJson($endpoint, $data)
+            ->json();
+    }
+
+    protected function getTest($endpoint): ?array
+    {
+        return $this->testClient
+            ->withToken($this->apiKey)
+            ->getJson($endpoint)
+            ->json();
     }
 
     public static function __callStatic(string $name, array $arguments)
