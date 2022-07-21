@@ -13,25 +13,13 @@ class EntityPhone implements Resource
 {
     use ActsAsResource;
 
+    public Entity $entity;
+
     /**
      * @throws IncompleteConfigurationException
-     * @throws InvalidUuidException
      */
-    public static function getEndpoint(Client $client, ...$parameters): string
+    public function getBaseEndpoint(): string
     {
-        $entityUuid = array_shift($parameters);
-        if (! Str::isUuid($entityUuid)) {
-            throw new InvalidUuidException();
-        }
-
-        $phoneUuid = count($parameters)
-            ? array_shift($parameters)
-            : '';
-
-        if (! empty($phoneUuid) && ! Str::isUuid($phoneUuid)) {
-            throw new InvalidUuidException();
-        }
-
-        return $client->getBaseUri() . "entities/{$entityUuid}/phones/{$phoneUuid}";
+        return Client::singleton()->getBaseUri() . "entities/{$this->entity->id}/phones";
     }
 }

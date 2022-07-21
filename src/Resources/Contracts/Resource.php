@@ -12,5 +12,7 @@ interface Resource
 {
     public function hydrateNestedResources(): void;
 
-    public static function getEndpoint(Client $client, ...$parameters): string;
+    public function getBaseEndpoint(): string;
+
+    public function getSpecificEndpoint(): string;
 }

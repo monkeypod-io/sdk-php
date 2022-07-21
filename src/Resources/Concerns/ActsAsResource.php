@@ -2,7 +2,12 @@
 
 namespace MonkeyPod\Api\Resources\Concerns;
 
-use MonkeyPod\Api\Resources\EntityPhone;
+use Illuminate\Http\Client\Response;
+use MonkeyPod\Api\Client;
+use MonkeyPod\Api\Exception\ApiResponseError;
+use MonkeyPod\Api\Exception\IncompleteConfigurationException;
+use MonkeyPod\Api\Exception\InvalidResourceException;
+use MonkeyPod\Api\Resources\Contracts\Resource;
 
 trait ActsAsResource
 {
@@ -13,6 +18,35 @@ trait ActsAsResource
         if ($id) {
             $this->set("id", $id);
         }
+    }
+
+    /**
+     * @throws IncompleteConfigurationException
+     * @throws ApiResponseError
+     */
+    public function create(array $data = null): static
+    {
+        $endpoint = $this->getBaseEndpoint();
+        $data ??= $this->data;
+
+        $this->data = Client::singleton()->post($endpoint, $data)['data'];
+        $this->hydrateNestedResources();
+
+        return $this;
+    }
+
+    /**
+     * @throws IncompleteConfigurationException
+     * @throws ApiResponseError
+     */
+    public function retrieve(): static
+    {
+        $endpoint = $this->getSpecificEndpoint();
+
+        $this->data = Client::singleton()->get($endpoint)['data'];
+        $this->hydrateNestedResources();
+
+        return $this;
     }
 
     public function set($dotpath, $value): static
@@ -44,5 +78,13 @@ trait ActsAsResource
     public function hydrateNestedResources(): void
     {
         // Override in resource classes
+    }
+
+    /**
+     * @throws IncompleteConfigurationException
+     */
+    public function getSpecificEndpoint(): string
+    {
+        return $this->getBaseEndpoint() . "/" . $this->id;
     }
 }

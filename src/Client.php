@@ -7,6 +7,7 @@ use Illuminate\Http\Client\Response;
 use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
 use MonkeyPod\Api\Exception\InvalidResourceException;
+use MonkeyPod\Api\Exception\ResourceNotFoundException;
 use MonkeyPod\Api\Resources\Contracts\Resource;
 use MonkeyPod\Api\Resources\Entity;
 
@@ -92,39 +93,6 @@ class Client
 
     /**
      * @throws IncompleteConfigurationException
-     * @throws InvalidResourceException
-     * @throws ApiResponseError
-     */
-    public function create(string $resourceClass, array $data): Resource
-    {
-        $this->confirmConfigured();
-
-        if (! is_a($resourceClass, Resource::class, true)) {
-            throw new InvalidResourceException();
-        }
-
-        $endpoint = $resourceClass::getEndpoint($this);
-
-        $response = $this->httpClient
-            ->withToken($this->apiKey)
-            ->post($endpoint, $data)
-            ->onError(function (Response $response) {
-                throw (new ApiResponseError())
-                    ->setHttpStatus($response->status())
-                    ->setErrors($response->json("errors", []));
-            })
-            ->json();
-
-        /** @var Resource $resource */
-        $resource = new $resourceClass;
-        $resource->set(null, $response['data']);
-        $resource->hydrateNestedResources();
-
-        return $resource;
-    }
-
-    /**
-     * @throws IncompleteConfigurationException
      */
     public function getBaseUri(): string
     {
@@ -150,6 +118,41 @@ class Client
     public function httpClient(): HttpClient
     {
         return $this->httpClient;
+    }
+
+    /**
+     * @throws ApiResponseError
+     */
+    public function get($endpoint): ?array
+    {
+        return $this->httpClient
+            ->withToken($this->apiKey)
+            ->get($endpoint)
+            ->onError(function (Response $response) {
+                throw match ($response->status()) {
+                    404 => new ResourceNotFoundException(),
+                    default => (new ApiResponseError())
+                        ->setHttpStatus($response->status())
+                        ->setErrors($response->json("errors", []))
+                };
+            })
+            ->json();
+    }
+
+    /**
+     * @throws ApiResponseError
+     */
+    public function post($endpoint, array $data): ?array
+    {
+        return $this->httpClient
+            ->withToken($this->apiKey)
+            ->post($endpoint, $data)
+            ->onError(function (Response $response) {
+                throw (new ApiResponseError())
+                    ->setHttpStatus($response->status())
+                    ->setErrors($response->json("errors", []));
+            })
+            ->json();
     }
 
     public static function configure(string $apiKey, string $subdomain, string $version = null, string $apiBase = null): static

@@ -27,9 +27,8 @@ class EntityRetrieveTest extends TestCase
                 "fake-subdomain.monkeypod.io/api/v2/entities/$uuid" => (new Factory())->response($responseData),
             ]);
 
-        $entity = Entity::retrieve($uuid);
-
-        $this->assertInstanceOf(Entity::class, $entity);
+        $entity = new Entity($uuid);
+        $entity->retrieve();
 
         $this->assertCount(2, $entity->phones);
         $this->assertInstanceOf(EntityPhone::class, $entity->phones[0]);

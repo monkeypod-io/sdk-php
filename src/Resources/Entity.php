@@ -12,7 +12,8 @@ use MonkeyPod\Api\Resources\Concerns\ActsAsResource;
 use MonkeyPod\Api\Resources\Contracts\Resource;
 
 /**
- * @property array&EntityPhone[] $phones
+ * @property string                 $id
+ * @property array&EntityPhone[]    $phones
  */
 class Entity implements Resource
 {
@@ -29,40 +30,10 @@ class Entity implements Resource
     }
 
     /**
-     * @throws InvalidResourceException
      * @throws IncompleteConfigurationException
-     * @throws ApiResponseError
      */
-    public static function retrieve($uuid): static
+    public function getBaseEndpoint(): string
     {
-        return Client::singleton()->retrieve(self::class, $uuid);
-    }
-
-    /**
-     * @throws ApiResponseError
-     * @throws IncompleteConfigurationException
-     * @throws InvalidResourceException
-     */
-    public static function create(array $data): static
-    {
-        return Client::singleton()->create(self::class, $data);
-    }
-
-    /**
-     * @throws IncompleteConfigurationException
-     * @throws InvalidUuidException
-     */
-    public static function getEndpoint(Client $client, ...$parameters): string
-    {
-        if (count($parameters)) {
-            $uuid = $parameters[0];
-            if (! Str::isUuid($uuid)) {
-                throw new InvalidUuidException();
-            }
-
-            return $client->getBaseUri() . "entities/{$uuid}";
-        }
-
-        return $client->getBaseUri() . "entities";
+        return Client::singleton()->getBaseUri() . "entities";
     }
 }
