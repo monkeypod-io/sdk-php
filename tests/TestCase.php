@@ -1,0 +1,14 @@
+<?php
+
+namespace MonkeyPod\Api\Tests;
+
+use MonkeyPod\Api\Client;
+
+class TestCase extends \PHPUnit\Framework\TestCase
+{
+    public function tearDown(): void
+    {
+        Client::forgetSingleton();
+        parent::tearDown();
+    }
+}

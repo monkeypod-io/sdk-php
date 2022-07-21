@@ -9,7 +9,6 @@ use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
 use MonkeyPod\Api\Exception\InvalidRequestException;
 use MonkeyPod\Api\Exception\ResourceNotFoundException;
-use MonkeyPod\Api\Tests\TestClient;
 
 class Client
 {
@@ -207,5 +206,10 @@ class Client
         }
 
         return self::$singleton;
+    }
+
+    public static function forgetSingleton(): void
+    {
+        self::$singleton = new static;
     }
 }

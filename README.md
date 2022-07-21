@@ -1,5 +1,7 @@
 # MonkeyPod API - PHP SDK
-Official PHP libraries for communicating with the MonkeyPod API.
+Official PHP libraries for communicating with the MonkeyPod API. Documentation
+for the API can be found in the 
+[MonkeyPod Knowledgebase](https://monkeypod.helpscoutdocs.com/category/134-api?sort=).
 
 ## Releases / Stability
 Releases prior to 1.0 should be considered unstable and make change at any time. If 
@@ -24,16 +26,43 @@ use MonkeyPod\Api\Client;
 $apiKey = "your-api-key-from-monkeypod";
 $subdomain = "my-organization-subdomain";
 
+// Static configuration creates a global Client object that
+// will automatically be used for all API calls.
+
 Client::configure($apiKey, $subdomain);
 
+// Alternatively, dynamic configuration scopes the configuration
+// to the specific client object. If you use this approach, you'll
+// need to pass the client in the constructor of any resources.
+
+$client = new Client();
+$client->setApiKey($apiKey);
+$client->setSubdomain($subdomain);
+
+$entity = new \MonkeyPod\Api\Resources\Entity($client);
 ```
+
+## Laravel
+This library uses a few components from the [Laravel](https://laravel.com) framework, 
+but it can be used with or without Laravel. If you do use Laravel, there is a test 
+helper that allows you to make API calls using Laravel's test HTTP client. This could 
+be useful if you need to mock the MonkeyPod API server locally.
 
 # API Resources
 Not all MonkeyPod data is available in the API, and not all actions are 
 available for each resource. As new resources are surfaced in the API
 we will do our best to keep the SDK current.
 
-Required fields will be labeled. Other fields can be presumed to be optional.
+### Constructors
+Resource constructors can accept the following parameters, in any order:
+* a Client object to use for API calls
+* a resource ID (must be a properly-formatted UUID)
+
+### Required, optional, and additional/unlisted fields
+Required fields are labeled in this documentation. Other fields are optional. 
+Not all available fields are shown in these docs. For a current list of all
+fields that apply to each resource, consult the 
+[API documentation](https://monkeypod.helpscoutdocs.com/category/134-api?sort=).
 
 ## Relationships 
 
@@ -60,10 +89,6 @@ $person->create();
 $id = $entity->id;
 ```
 
-**NOTE:** The above is a sample of available fields, including all required fields. Other 
-optional fields are available and correspond to the 
-[documentation](https://monkeypod.helpscoutdocs.com/article/135-api-resource-entities?preview=6281b42168d51e7794440884).
-
 #### Retrieve a Relationship
 ```php 
 use MonkeyPod\Api\Resources\Entity;
@@ -77,38 +102,38 @@ $person->first_name; // Jane
 
 #### Update a Relationship
 
-IN DEVELOPMENT.
+COMING SOON.
 
 #### Delete (or Deactivate) a Relationship
 
-IN DEVELOPMENT.
+COMING SOON.
 
 ## Custom Attributes
 
 #### Retrieve a Collection of Custom Attributes
 
-IN DEVELOPMENT.
+COMING SOON.
 
 ## Relationship Phones
 
 #### Retrieve a Collection of Phone Numbers for a Specific Relationship
 
-IN DEVELOPMENT.
+COMING SOON.
 
 #### Retrieve a Single Phone Number
 
-IN DEVELOPMENT.
+COMING SOON.
 
 #### Delete a Phone Number
 
-IN DEVELOPMENT.
+COMING SOON.
 
 ## Relationship Interactions
 
 #### Create a Relationship Interaction
 
-IN DEVELOPMENT.
+COMING SOON.
 
 #### Retrieve a Collection of Interactions for a Specific Relationship
 
-IN DEVELOPMENT.
+COMING SOON.

@@ -4,12 +4,8 @@ namespace MonkeyPod\Api\Tests;
 
 use Illuminate\Http\Client\Factory;
 use MonkeyPod\Api\Client;
-use MonkeyPod\Api\Exception\ApiResponseError;
-use MonkeyPod\Api\Exception\InvalidRequestException;
 use MonkeyPod\Api\Resources\Entity;
 use MonkeyPod\Api\Resources\EntityPhone;
-use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
 
 class EntityCreateTest extends TestCase
 {
@@ -47,7 +43,12 @@ class EntityCreateTest extends TestCase
     {
         $responseData = json_decode(file_get_contents(__DIR__ . "/json/entity.json"), true);
 
-        Client::configure("fake-api-key", "fake-subdomain")
+        $client = new Client();
+        $client
+            ->setApiKey("fake-api-key")
+            ->setSubdomain("fake-subdomain");
+
+        $client
             ->httpClient()
             ->preventStrayRequests()
             ->fake([
@@ -58,7 +59,7 @@ class EntityCreateTest extends TestCase
         unset($data['created_at']);
         unset($data['updated_at']);
 
-        $entity = new Entity;
+        $entity = new Entity($client);
         foreach ($data as $key => $value) {
             $entity->$key = $value;
         }

@@ -34,6 +34,6 @@ class Entity implements Resource
      */
     public function getBaseEndpoint(): string
     {
-        return Client::singleton()->getBaseUri() . "entities";
+        return $this->apiClient->getBaseUri() . "entities";
     }
 }

@@ -2,22 +2,39 @@
 
 namespace MonkeyPod\Api\Resources\Concerns;
 
-use Illuminate\Http\Client\Response;
+use Illuminate\Support\Str;
 use MonkeyPod\Api\Client;
 use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
-use MonkeyPod\Api\Exception\InvalidResourceException;
-use MonkeyPod\Api\Resources\Contracts\Resource;
+use MonkeyPod\Api\Exception\InvalidUuidException;
 
 trait ActsAsResource
 {
     protected array $data = [];
 
-    public function __construct(string $id = null)
+    protected Client $apiClient;
+
+    /**
+     * @throws InvalidUuidException
+     * @throws IncompleteConfigurationException
+     */
+    public function __construct(...$parameters)
     {
-        if ($id) {
-            $this->set("id", $id);
+        foreach ($parameters as $parameter) {
+            if ($parameter instanceof Client) {
+                $this->apiClient = $parameter;
+            }
+
+            if (is_string($parameter)) {
+                if (! Str::isUuid($parameter)) {
+                    throw new InvalidUuidException();
+                }
+
+                $this->set("id", $parameter);
+            }
         }
+
+        $this->apiClient ??= Client::singleton();
     }
 
     /**
@@ -29,7 +46,7 @@ trait ActsAsResource
         $endpoint = $this->getBaseEndpoint();
         $data ??= $this->data;
 
-        $this->data = Client::singleton()->post($endpoint, $data)['data'];
+        $this->data = $this->apiClient->post($endpoint, $data)['data'];
         $this->hydrateNestedResources();
 
         return $this;
@@ -43,7 +60,7 @@ trait ActsAsResource
     {
         $endpoint = $this->getSpecificEndpoint();
 
-        $this->data = Client::singleton()->get($endpoint)['data'];
+        $this->data = $this->apiClient->get($endpoint)['data'];
         $this->hydrateNestedResources();
 
         return $this;
