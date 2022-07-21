@@ -142,7 +142,7 @@ class Client
             ->json();
     }
 
-    public static function configure(string $apiKey, string $subdomain, string $version = null, string $apiBase = null): static
+    public static function configure(string $apiKey, string $subdomain, string $version = null, string $apiHost = null): static
     {
         self::$singleton = new static;
 
@@ -150,7 +150,7 @@ class Client
             ->setApiKey($apiKey)
             ->setSubdomain($subdomain)
             ->setVersion($version ?? self::$singleton->version)
-            ->setApiHost($apiBase ?? self::$singleton->apiHost);
+            ->setApiHost($apiHost ?? self::$singleton->apiHost);
     }
 
     public function verifySsl(bool $verify = true): static
