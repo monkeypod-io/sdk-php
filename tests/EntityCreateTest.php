@@ -4,6 +4,8 @@ namespace MonkeyPod\Api\Tests;
 
 use Illuminate\Http\Client\Factory;
 use MonkeyPod\Api\Client;
+use MonkeyPod\Api\Exception\ApiResponseError;
+use MonkeyPod\Api\Exception\InvalidRequestException;
 use MonkeyPod\Api\Resources\Entity;
 use MonkeyPod\Api\Resources\EntityPhone;
 use PHPUnit\Framework\TestCase;

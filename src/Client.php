@@ -6,6 +6,7 @@ use Illuminate\Http\Client\Factory as HttpClient;
 use Illuminate\Http\Client\Response;
 use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
+use MonkeyPod\Api\Exception\InvalidRequestException;
 use MonkeyPod\Api\Exception\InvalidResourceException;
 use MonkeyPod\Api\Exception\ResourceNotFoundException;
 use MonkeyPod\Api\Resources\Contracts\Resource;
@@ -22,6 +23,8 @@ class Client
     protected string $apiBase = "https://monkeypod.io";
 
     protected HttpClient $httpClient;
+
+    protected bool $verifySsl = true;
 
     private static Client $singleton;
 
@@ -127,6 +130,8 @@ class Client
     {
         return $this->httpClient
             ->withToken($this->apiKey)
+            ->acceptJson()
+            ->withOptions(['verify' => $this->verifySsl])
             ->get($endpoint)
             ->onError(function (Response $response) {
                 throw match ($response->status()) {
@@ -146,11 +151,15 @@ class Client
     {
         return $this->httpClient
             ->withToken($this->apiKey)
+            ->acceptJson()
+            ->withOptions(['verify' => $this->verifySsl])
             ->post($endpoint, $data)
             ->onError(function (Response $response) {
-                throw (new ApiResponseError())
-                    ->setHttpStatus($response->status())
-                    ->setErrors($response->json("errors", []));
+                throw match ($response->status()) {
+                    404 => new ResourceNotFoundException(),
+                    422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+                    default => (new ApiResponseError())->setHttpStatus($response->status()),
+                };
             })
             ->json();
     }
@@ -164,6 +173,13 @@ class Client
             ->setSubdomain($subdomain)
             ->setVersion($version ?? self::$singleton->version)
             ->setApiBase($apiBase ?? self::$singleton->apiBase);
+    }
+
+    public function verifySsl(bool $verify = true): static
+    {
+        $this->verifySsl = $verify;
+
+        return $this;
     }
 
     public static function __callStatic(string $name, array $arguments)

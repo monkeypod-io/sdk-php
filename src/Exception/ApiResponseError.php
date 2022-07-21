@@ -8,7 +8,7 @@ class ApiResponseError extends \Exception
 
     public int $httpStatus;
 
-    public array $errors;
+    public array $errors = [];
 
     public function setHttpStatus($status): static
     {
