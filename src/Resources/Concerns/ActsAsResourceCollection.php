@@ -67,7 +67,7 @@ trait ActsAsResourceCollection
     public function rewind(): void
     {
         if (! $this->page || 1 === $this->page) {
-            rewind($this->resources);
+            $this->resources = collect($this->resources->all());
             return;
         }
 
