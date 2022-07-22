@@ -2,7 +2,6 @@
 
 namespace MonkeyPod\Api;
 
-use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Http\Client\Factory as HttpClient;
 use Illuminate\Http\Client\Response;
 use MonkeyPod\Api\Exception\ApiResponseError;
@@ -26,7 +25,12 @@ class Client
 
     protected bool $testMode = false;
 
-    private TestCase $laravelTestCase;
+    /**
+     * @var Illuminate\Foundation\Testing\TestCase
+     * @noinspection PhpUndefinedNamespaceInspection
+     * @noinspection PhpUndefinedClassInspection
+     */
+    private $laravelTestCase;
     
     private static Client $singleton;
 
@@ -212,8 +216,10 @@ class Client
      * Can be used to substitute a Laravel test case
      * instead of the real Http client.
      * 
-     * @param TestCase $testCase
+     * @param Illuminate\Foundation\Testing\TestCase $testCase
      * @return $this
+     * @noinspection PhpUndefinedNamespaceInspection
+     * @noinspection PhpUndefinedClassInspection
      */
     public function withLaravelTestCase($testCase): static
     {
