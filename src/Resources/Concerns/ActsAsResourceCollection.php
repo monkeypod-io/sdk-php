@@ -35,7 +35,7 @@ trait ActsAsResourceCollection
 
     public function current(): Resource
     {
-        return current($this->resources);
+        return $this->resources->getIterator()->current();
     }
 
     /**
@@ -44,7 +44,7 @@ trait ActsAsResourceCollection
     public function next(): void
     {
         if (current($this->resources) !== $this->resources->last() || ! $this->nextPageUrl) {
-            next($this->resources);
+            $this->resources->getIterator()->next();
             return;
         }
 
@@ -53,12 +53,12 @@ trait ActsAsResourceCollection
 
     public function key(): string
     {
-        return key($this->resources);
+        return $this->resources->getIterator()->key();
     }
 
     public function valid(): bool
     {
-        return (bool) current($this->resources);
+        return $this->resources->getIterator()->valid();
     }
 
     /**
@@ -67,7 +67,7 @@ trait ActsAsResourceCollection
     public function rewind(): void
     {
         if (! $this->page || 1 === $this->page) {
-            $this->resources = collect($this->resources->all());
+            $this->resources->getIterator()->rewind();
             return;
         }
 
