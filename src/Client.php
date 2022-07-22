@@ -168,13 +168,13 @@ class Client
     /**
      * @throws ApiResponseError
      */
-    public function delete($endpoint): ?array
+    public function delete($endpoint): bool
     {
         if ($this->testMode) {
             return $this->deleteTest($endpoint);
         }
 
-        return $this->httpClient
+        $this->httpClient
             ->withToken($this->apiKey)
             ->acceptJson()
             ->withOptions(['verify' => $this->verifySsl])
@@ -185,8 +185,9 @@ class Client
                     422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
                     default => (new ApiResponseError())->setHttpStatus($response->status()),
                 };
-            })
-            ->json();
+            });
+
+        return true;
     }
 
     public static function configure(string $apiKey, string $subdomain, string $version = null, string $apiHost = null): static
@@ -225,26 +226,53 @@ class Client
 
     protected function postTest($endpoint, array $data): ?array
     {
-        return $this->testClient
+        $response = $this->testClient
             ->withToken($this->apiKey)
-            ->postJson($endpoint, $data)
-            ->json();
+            ->postJson($endpoint, $data);
+
+        if ($response->isSuccessful()) {
+            return $response->json();
+        }
+
+        throw match ($response->status()) {
+            404 => new ResourceNotFoundException(),
+            422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+            default => (new ApiResponseError())->setHttpStatus($response->status()),
+        };
     }
 
     protected function putTest($endpoint, array $data): ?array
     {
-        return $this->testClient
+        $response = $this->testClient
             ->withToken($this->apiKey)
-            ->putJson($endpoint, $data)
-            ->json();
+            ->putJson($endpoint, $data);
+
+        if ($response->isSuccessful()) {
+            return $response->json();
+        }
+
+        throw match ($response->status()) {
+            404 => new ResourceNotFoundException(),
+            422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+            default => (new ApiResponseError())->setHttpStatus($response->status()),
+        };
     }
 
-    protected function deleteTest($endpoint): ?array
+    protected function deleteTest($endpoint): bool
     {
-        return $this->testClient
+        $response = $this->testClient
             ->withToken($this->apiKey)
-            ->deleteJson($endpoint)
-            ->json();
+            ->deleteJson($endpoint);
+
+        if ($response->isSuccessful()) {
+            return true;
+        }
+
+        throw match ($response->status()) {
+            404 => new ResourceNotFoundException(),
+            422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+            default => (new ApiResponseError())->setHttpStatus($response->status()),
+        };
     }
 
     protected function getTest($endpoint): ?array
