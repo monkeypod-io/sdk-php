@@ -8,6 +8,9 @@ use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
 use MonkeyPod\Api\Exception\InvalidUuidException;
 
+/**
+ * @property string $id
+ */
 trait ActsAsResource
 {
     protected array $data = [];
