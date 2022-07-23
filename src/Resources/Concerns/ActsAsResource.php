@@ -100,7 +100,11 @@ trait ActsAsResource
     public function set($dotpath, $value): static
     {
         if (null === $dotpath) {
+            // Retain the ID even if we're overwriting everything else
+            $id = $this->data['id'] ?? null;
             $this->data = $value;
+            $this->data['id'] = $id;
+
         } else {
             data_set($this->data, $dotpath, $value);
         }
