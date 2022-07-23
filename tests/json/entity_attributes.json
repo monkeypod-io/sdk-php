@@ -1,0 +1,57 @@
+{
+  "data": [
+    {
+      "name": "Costume Color",
+      "slug": "costume-color",
+      "type": "string",
+      "form": "select_other",
+      "choices": [
+        "Blue",
+        "Red",
+        "Green",
+        "Yellow"
+      ],
+      "created_at": "2022-04-11T22:31:32.000000Z",
+      "updated_at": "2022-04-11T22:31:32.000000Z"
+    }, {
+      "name": "Discovered Superpowers",
+      "slug": "discovered-superpowers",
+      "type": "string",
+      "form": "datepicker",
+      "choices": null,
+      "created_at": "2022-04-11T22:31:32.000000Z",
+      "updated_at": "2022-04-11T22:31:32.000000Z"
+    }, {
+      "name": "Secret Identity?",
+      "slug": "secret-identity",
+      "type": "boolean",
+      "form": "checkbox_boolean",
+      "choices": null,
+      "created_at": "2022-04-11T22:31:32.000000Z",
+      "updated_at": "2022-04-11T22:31:32.000000Z"
+    }, {
+      "name": "Publisher",
+      "slug": "publisher",
+      "type": "string",
+      "form": "text",
+      "choices": null,
+      "created_at": "2022-04-11T22:31:32.000000Z",
+      "updated_at": "2022-04-11T22:31:32.000000Z"
+    }
+  ],
+  "links": {
+    "first": "https://my-org.monkeypod.io/api/v2/entity_attributes?page=1",
+    "last": "https://my-org.monkeypod.io/api/v2/entity_attributes?page=1",
+    "prev": null,
+    "next": null
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 1,
+    "path": "https://my-org.monkeypod.io/api/v2/entity_attributes",
+    "per_page": 15,
+    "to": 4,
+    "total": 4
+  }
+}
