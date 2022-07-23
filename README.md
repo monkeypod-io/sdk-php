@@ -105,7 +105,7 @@ $person->create();
  * If you didn't supply an ID, one will be assigned by MonkeyPod, 
  * which you probably want to store for future reference (for example, 
  * to associate it with a data record in your application that corresponds
- * or relates to the created entity.
+ * or relates to the created entity).
  */
 $entity->id;
 ```
