@@ -19,6 +19,20 @@ class Entity implements Resource
 {
     use ActsAsResource;
 
+    public function interaction($interactionId = null): EntityInteraction
+    {
+        return EntityInteraction::forEntity($this, $interactionId);
+    }
+
+    public function interactions(): EntityInteractionCollection
+    {
+        return EntityInteractionCollection::forEntity($this);
+    }
+
+    /**
+     * @throws InvalidUuidException
+     * @throws IncompleteConfigurationException
+     */
     public function hydrateNestedResources(): void
     {
         foreach ($this->get("phones") ?? [] as $key => $value) {

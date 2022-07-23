@@ -135,4 +135,9 @@ trait ActsAsResource
     {
         return $this->getBaseEndpoint() . "/" . $this->id;
     }
+
+    public function getApiClient(): Client
+    {
+        return $this->apiClient;
+    }
 }

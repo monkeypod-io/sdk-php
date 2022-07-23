@@ -66,9 +66,26 @@ Not all available fields are shown in these docs. For a current list of all
 fields that apply to each resource, consult the 
 [API documentation](https://monkeypod.helpscoutdocs.com/category/134-api?sort=).
 
-## Relationships 
+# API Resource Collections
+Resource collection classes implement the ResourceCollection interface and
+are created when you specifically request a group of records from the API.
 
-#### Create a New Relationship
+#### Pagination
+By default, a resource collection will contain (up to) the first 15 results
+from the API call. However, you may use the ```autoPagingIterator()``` method
+to return an iterator that invisibly requests additional pages of results
+until the last page is reached. 
+
+# List of API Resources and Actions
+
+## Entities (a.k.a. "Relationships")
+
+**Note:** MonkeyPod's API uses the term "entity" to refer to what MonkeyPod itself calls
+a "relationship". This is to avoid confusion in a context where the word "relationship" can
+have a different, technical meaning (i.e. when a database record is connected to one or 
+more other records). 
+
+#### Create a New Entity
 
 ```php 
 use MonkeyPod\Api\Resources\Entity;
@@ -91,7 +108,7 @@ $person->create();
 $entity->id;
 ```
 
-#### Retrieve a Relationship
+#### Retrieve an Entity
 ```php 
 use MonkeyPod\Api\Resources\Entity;
 
@@ -102,7 +119,7 @@ $person->retrieve();
 $person->first_name; // Jane
 ```
 
-#### Update a Relationship
+#### Update an Entity
 
 ```php 
 use MonkeyPod\Api\Resources\Entity;
@@ -127,7 +144,7 @@ $nowNamedJohn->first_name; // John
 $nowNamedJohn->last_name;  // Jones
 ```
 
-#### Delete (or Deactivate) a Relationship
+#### Delete (or Deactivate) an Entity
 
 ```php 
 use MonkeyPod\Api\Resources\Entity;
@@ -145,11 +162,105 @@ $person->delete();
 
 #### Retrieve a Collection of Custom Attributes
 
-COMING SOON.
+```php 
+use MonkeyPod\Api\Resources\EntityAttribute;
+use MonkeyPod\Api\Resources\EntityAttributeCollection;
 
-## Relationship Phones
+$attributes = new EntityAttributeCollection();
+$attributes->retrieve();
 
-#### Retrieve a Collection of Phone Numbers for a Specific Relationship
+foreach ($attributes as $attribute) {
+    $attribute instanceof EntityAttribute; // true
+}
+
+while ($attributes->currentPage < $attributes->lastPage) {
+    $attributes->retrieve($attributes->currentPage + 1);
+}
+
+// or
+
+$attributes = new EntityAttributeCollection();
+$attributes->retrieve();
+
+foreach ($attributes->autoPagingIterator() as $attribute) {
+    // magically fetches all attributes for all pages!
+}
+
+// The most important field on an attribute resource is generally "slug",
+// since that's what you'll use when populating the "extra_attributes" 
+// property on an Entity resource.
+
+$slug = $attribute->slug;
+$entity->$slug = "Important custom data!"
+```
+
+## Entity Interactions
+
+#### Create an Entity Interaction
+
+```php 
+use MonkeyPod\Api\Resources\Entity;
+use MonkeyPod\Api\Resources\EntityInteraction;
+
+// Because an interaction cannot exist without an associated entity
+// it should be instantiated through the static forEntity() method,
+// which accepts an entity resource object:
+
+$interaction = EntityInteraction::forEntity(new Entity($entityId))
+
+// Optionally, pass a second ID to serve as the ID for the interaction itself:
+
+$interaction = EntityInteraction::forEntity(new Entity($entityId), $interactionId)
+
+// Alternatively, you can use the interaction() method on the resource object:
+
+$entity = new Entity($entityId);
+$interaction = $entity->interaction($interactionId); // $interactionId is optional here as above
+
+// Some fields you can set:
+
+$interaction->type = "Phone Call"; // REQUIRED
+$interaction->description = "She called to ask whether we had any tables left for the gala. I told her we were sold out."; // REQUIRED
+$interaction->link = "https://some-relevant-link-with.more/info-about-the/interaction";
+$interaction->happened_at = "2022-06-15 11:42am"; // REQUIRED, a valid datetime string
+
+/** 
+ * Optionally flag the interaction as "important". Acceptable values are 1, 2, or 3,
+ * corresponding to negative, neutral, or positive. Or leave it null to ignore.
+ */
+$interaction->flag = 3;  
+
+// Now beam it up to the mothership!
+
+$interaction->create();
+```
+
+#### Retrieve a Collection of Interactions for a Specific Entity
+
+```php 
+use MonkeyPod\Api\Resources\Entity;
+use MonkeyPod\Api\Resources\EntityInteraction;
+use MonkeyPod\Api\Resources\EntityInteractionCollection;
+
+// Because interactions cannot exist without an associated entity
+// the collection can be instantiated through the static forEntity() 
+// method, which accepts an entity resource object:
+
+$interactions = EntityInteractionCollection::forEntity(new Entity($entityId))
+
+// Alternatively, you can use the interactions() method on the resource object:
+
+$entity = new Entity($entityId);
+$interactions = $entity->interactions();
+
+// In either case, to retrieve records from the API:
+
+$interactions->retrieve();
+```
+
+## Entity Phones
+
+#### Retrieve a Collection of Phone Numbers for a Specific Entity
 
 COMING SOON.
 
@@ -158,15 +269,5 @@ COMING SOON.
 COMING SOON.
 
 #### Delete a Phone Number
-
-COMING SOON.
-
-## Relationship Interactions
-
-#### Create a Relationship Interaction
-
-COMING SOON.
-
-#### Retrieve a Collection of Interactions for a Specific Relationship
 
 COMING SOON.

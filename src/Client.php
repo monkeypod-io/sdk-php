@@ -105,7 +105,7 @@ class Client
             return $this->getTest($endpoint);
         }
 
-        return $this->httpClient
+        $response = $this->httpClient
             ->withToken($this->apiKey)
             ->acceptJson()
             ->withOptions(['verify' => $this->verifySsl])
@@ -117,8 +117,9 @@ class Client
                         ->setHttpStatus($response->status())
                         ->setErrors($response->json("errors", []))
                 };
-            })
-            ->json();
+            });
+
+        return $response->json();
     }
 
     /**

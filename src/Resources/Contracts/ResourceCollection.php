@@ -8,7 +8,7 @@ use MonkeyPod\Api\Resources\Concerns\ActsAsResource;
 /**
  * @mixin ActsAsResource
  */
-interface ResourceCollection extends \ArrayAccess, \Iterator
+interface ResourceCollection extends \IteratorAggregate
 {
     public function getBaseEndpoint(): string;
 }
