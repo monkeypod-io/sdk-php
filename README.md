@@ -56,9 +56,11 @@ available for each resource. As new resources are surfaced in the API
 we will do our best to keep the SDK current.
 
 ### Constructors
-Resource constructors can accept the following parameters, in any order:
+Most resource constructors can accept the following parameters, in any order:
 * a Client object to use for API calls
 * a resource ID (must be a properly-formatted UUID)
+
+
 
 ### Required, optional, and additional/unlisted fields
 Required fields are labeled in this documentation. Other fields are optional. 
@@ -103,7 +105,7 @@ $person->create();
  * If you didn't supply an ID, one will be assigned by MonkeyPod, 
  * which you probably want to store for future reference (for example, 
  * to associate it with a data record in your application that corresponds
- * or relates to the created entity.
+ * or relates to the created entity).
  */
 $entity->id;
 ```
@@ -271,3 +273,24 @@ COMING SOON.
 #### Delete a Phone Number
 
 COMING SOON.
+
+## Future Development
+
+##### Other Resources / Endpoints to Consider
+* Accounts
+  * Retrieve account
+  * Retrieve collection of accounts
+* Classes
+  * Retrieve class
+  * Retrieve collection of classes
+* Tags
+  * Retrieve tag
+  * Retrieve collection of tags
+    * All tags
+    * By type
+* Items
+  * Retrieve item
+  * Retrieve collection of items
+* Pipelines
+  * Add relationship to pipeline
+  * Update a relationship's status for a pipeline step

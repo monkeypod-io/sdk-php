@@ -8,6 +8,7 @@ use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
 use MonkeyPod\Api\Exception\InvalidResourceException;
 use MonkeyPod\Api\Exception\InvalidUuidException;
+use MonkeyPod\Api\Exception\UnmetDependencyException;
 use MonkeyPod\Api\Resources\Concerns\ActsAsResource;
 use MonkeyPod\Api\Resources\Concerns\AttachedToEntity;
 use MonkeyPod\Api\Resources\Contracts\Resource;
@@ -23,12 +24,4 @@ class EntityInteraction implements Resource
 {
     use ActsAsResource,
         AttachedToEntity;
-
-    /**
-     * @throws IncompleteConfigurationException
-     */
-    public function getBaseEndpoint(): string
-    {
-        return $this->apiClient->getBaseUri() . "entities/{$this->entity->id}/interactions";
-    }
 }
