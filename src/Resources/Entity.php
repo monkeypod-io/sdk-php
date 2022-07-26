@@ -19,23 +19,6 @@ class Entity implements Resource
 {
     use ActsAsResource;
 
-    public function match()
-    {
-        $endpoint = $this->getBaseEndpoint() . '/match';
-        $queryString = http_build_query(array_filter([
-            'id' => $this->id,
-            'email' => $this->email,
-            'name' => $this->getName(),
-        ]));
-        
-        $response = $this->getApiClient()->get("$endpoint?$queryString");
-
-        $collection = new EntityCollection();
-        $collection->fromResponseData($response);
-
-        return $collection;
-    }
-    
     public function interaction($interactionId = null): EntityInteraction
     {
         return EntityInteraction::forEntity($this, $interactionId);

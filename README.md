@@ -160,6 +160,28 @@ $person->delete();
 // transactions or other data, it will be deactivated instead.  
 ```
 
+#### Match Existing Entities
+```php
+use MonkeyPod\Api\Resources\Entity;
+
+$comparator = new Entity();
+$comparator->email = 'jane@example.com';
+
+$matches = new \MonkeyPod\Api\Resources\EntityCollection();
+$matches->match($comparator);
+
+// API will also match on ID or name
+$comparator = new Entity();
+$comparator->first_name = 'Jane';
+$comparator->last_name = 'Smith';
+
+$matches = new \MonkeyPod\Api\Resources\EntityCollection();
+$matches->match($comparator);
+
+// Possible matches will be populated to the collection 
+// with the strongest candidates first.
+```
+
 ## Custom Attributes
 
 #### Retrieve a Collection of Custom Attributes
@@ -283,14 +305,30 @@ COMING SOON.
 * Classes
   * Retrieve class
   * Retrieve collection of classes
-* Tags
-  * Retrieve tag
-  * Retrieve collection of tags
-    * All tags
-    * By type
+* Donation
+  * Retrieve a donation
+  * Create a donation
+  * Update a donation
+  * Delete a donation
+* Entity
+  * Find by email address
 * Items
   * Retrieve item
   * Retrieve collection of items
 * Pipelines
   * Add relationship to pipeline
   * Update a relationship's status for a pipeline step
+* Sales
+  * Retrieve a sale
+  * Create a sale
+  * Update a sale
+  * Delete a sale
+* Tags
+  * Retrieve tag
+  * Retrieve collection of tags
+    * All tags
+    * By type
+* Webhooks
+  * Retrieve a collection of webhooks
+  * Create a webhook
+  * Delete a webhook

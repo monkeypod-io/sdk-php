@@ -13,6 +13,20 @@ class EntityCollection implements ResourceCollection
 {
     use ActsAsResourceCollection;
 
+    public function match(Entity $entity)
+    {
+        $endpoint = $entity->getBaseEndpoint() . '/match';
+        $queryString = http_build_query(array_filter([
+            'id' => $entity->id,
+            'email' => $entity->email,
+            'name' => $entity->getName(),
+        ]));
+
+        $response = $this->getApiClient()->get("$endpoint?$queryString");
+
+        return $this->fromResponseData($response);
+    }
+
     protected function buildResource(array $data): Resource
     {
         return (new Entity())->set(null, $data);
