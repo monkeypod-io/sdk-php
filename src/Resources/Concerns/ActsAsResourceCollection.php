@@ -45,10 +45,10 @@ trait ActsAsResourceCollection
     protected array $resources = [];
 
     public function __construct(
-        protected ?Client $client = null,
+        protected ?Client $apiClient = null,
     )
     {
-        $this->client ??= Client::singleton();
+        $this->apiClient ??= Client::singleton();
     }
 
     public function getIterator(): \ArrayIterator
@@ -134,7 +134,7 @@ trait ActsAsResourceCollection
      */
     protected function retrieveUri(string $uri): void
     {
-        $response = $this->client->get($uri);
+        $response = $this->apiClient->get($uri);
         $this->fromResponseData($response);
     }
 

@@ -18,7 +18,7 @@ class EntityAttributeCollection implements ResourceCollection
      */
     protected function buildResource(array $data): Resource
     {
-        $attribute = new EntityAttribute($this->client);
+        $attribute = new EntityAttribute($this->apiClient);
         $attribute->set(null, $data);
 
         return $attribute;
@@ -29,6 +29,6 @@ class EntityAttributeCollection implements ResourceCollection
      */
     public function getBaseEndpoint(): string
     {
-        return $this->client->getBaseUri() . "entity_attributes";
+        return $this->apiClient->getBaseUri() . "entity_attributes";
     }
 }

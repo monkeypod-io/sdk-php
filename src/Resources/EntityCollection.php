@@ -22,7 +22,7 @@ class EntityCollection implements ResourceCollection
             'name' => $entity->getName(),
         ]));
 
-        $response = $this->getApiClient()->get("$endpoint?$queryString");
+        $response = $this->apiClient->get("$endpoint?$queryString");
 
         return $this->fromResponseData($response);
     }
