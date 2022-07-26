@@ -284,10 +284,19 @@ class Client
 
     protected function getTest($endpoint): ?array
     {
-        return $this->testClient
+        $response = $this->testClient
             ->withToken($this->apiKey)
-            ->getJson($endpoint)
-            ->json();
+            ->getJson($endpoint);
+
+        if ($response->isSuccessful()) {
+            return $response->json();
+        }
+
+        throw match ($response->status()) {
+            404 => new ResourceNotFoundException(),
+            422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+            default => (new ApiResponseError())->setHttpStatus($response->status()),
+        };
     }
 
     public static function __callStatic(string $name, array $arguments)

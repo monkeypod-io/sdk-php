@@ -101,7 +101,7 @@ trait ActsAsResource
     {
         if (null === $dotpath) {
             // Retain the ID even if we're overwriting everything else
-            $id = $this->data['id'] ?? null;
+            $id = $this->data['id'] ?? $value['id'] ?? null;
             $this->data = $value;
             $this->data['id'] = $id;
 

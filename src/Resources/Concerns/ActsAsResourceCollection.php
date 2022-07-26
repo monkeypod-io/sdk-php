@@ -101,6 +101,33 @@ trait ActsAsResourceCollection
     }
 
     /**
+     * @throws InvalidUuidException
+     * @throws IncompleteConfigurationException
+     */
+    public function fromResponseData(array $response): static
+    {
+        $this->currentPage = Arr::get($response, 'meta.current_page', 1);
+        $this->lastPage = Arr::get($response, 'meta.last_page', 1);
+        $this->total = Arr::get($response, 'meta.total', count($response['data']));
+
+        $this->firstPageUrl = Arr::get($response, 'links.first');
+        $this->nextPageUrl = Arr::get($response, 'links.next');
+        $this->prevPageUrl = Arr::get($response, 'links.prev');
+
+        $this->resources = [];
+        foreach ($response['data'] as $item) {
+            $this->resources[] = $this->buildResource($item);
+        }
+
+        return $this;
+    }
+
+    public function shift(): ?Resource
+    {
+        return array_shift($this->resources);
+    }
+
+    /**
      * @throws ApiResponseError
      * @throws InvalidUuidException
      * @throws IncompleteConfigurationException
@@ -108,20 +135,7 @@ trait ActsAsResourceCollection
     protected function retrieveUri(string $uri): void
     {
         $response = $this->client->get($uri);
-
-        $this->currentPage = $response['meta']['current_page'];
-        $this->lastPage = $response['meta']['last_page'];
-        $this->total = $response['meta']['total'];
-
-        $this->firstPageUrl = $response['links']['first'];
-        $this->nextPageUrl = $response['links']['next'];
-        $this->prevPageUrl = $response['links']['prev'];
-
-
-        $this->resources = [];
-        foreach ($response['data'] as $item) {
-            $this->resources[] = $this->buildResource($item);
-        }
+        $this->fromResponseData($response);
     }
 
     abstract protected function buildResource(array $data): Resource;
