@@ -311,7 +311,7 @@ COMING SOON.
   * Update a donation
   * Delete a donation
 * Entity
-  * Find by email address
+  * Populate from webhook payload
 * Items
   * Retrieve item
   * Retrieve collection of items
@@ -332,3 +332,5 @@ COMING SOON.
   * Retrieve a collection of webhooks
   * Create a webhook
   * Delete a webhook
+* Events
+  * Retrieve a collection of webhook-capable events
