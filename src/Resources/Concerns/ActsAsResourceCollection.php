@@ -56,6 +56,11 @@ trait ActsAsResourceCollection
         return new \ArrayIterator($this->resources);
     }
 
+    public function count(): int
+    {
+        return count($this->resources);
+    }
+
     /**
      * @throws InvalidUuidException
      * @throws ApiResponseError
@@ -85,7 +90,7 @@ trait ActsAsResourceCollection
     {
         $base = $this->getBaseEndpoint();
         $baseComponents = parse_url($base);
-        $queryString = Arr::get($baseComponents, 'query');
+        $queryString = Arr::get($baseComponents, 'query', '');
         parse_str($queryString, $queryParams);
 
         $queryParams['page'] = $page;
