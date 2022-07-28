@@ -282,26 +282,14 @@ $interactions = $entity->interactions();
 $interactions->retrieve();
 ```
 
-## Entity Phones
-
-#### Retrieve a Collection of Phone Numbers for a Specific Entity
-
-COMING SOON.
-
-#### Retrieve a Single Phone Number
-
-COMING SOON.
-
-#### Delete a Phone Number
-
-COMING SOON.
-
 ## Future Development
 
 ##### Other Resources / Endpoints to Consider
 * Accounts
   * Retrieve account
   * Retrieve collection of accounts
+    * Filtered by type and/or subtype
+    * Include inactive
 * Classes
   * Retrieve class
   * Retrieve collection of classes
