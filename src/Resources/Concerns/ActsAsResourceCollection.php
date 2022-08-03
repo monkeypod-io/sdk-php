@@ -86,7 +86,7 @@ trait ActsAsResourceCollection
      * @throws IncompleteConfigurationException
      * @throws InvalidUuidException
      */
-    public function retrieve(int $page = 1): void
+    public function retrieve(int $page = 1): static
     {
         $base = $this->getBaseEndpoint();
         $baseComponents = parse_url($base);
@@ -103,6 +103,8 @@ trait ActsAsResourceCollection
             ->toString();
 
         $this->retrieveUri($endpoint);
+
+        return $this;
     }
 
     /**

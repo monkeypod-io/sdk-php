@@ -19,7 +19,7 @@ class EntityCollection implements ResourceCollection
         $queryString = http_build_query(array_filter([
             'id' => $entity->id,
             'email' => $entity->email,
-            'name' => $entity->getName(),
+            'name' => $entity->getFullName(),
         ]));
 
         $response = $this->apiClient->get("$endpoint?$queryString");
