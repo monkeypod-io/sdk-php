@@ -1,6 +1,7 @@
 ---
 layout: default
 parent: API Resources
+title: Entities
 nav_order: 1
 ---
 
@@ -12,7 +13,7 @@ have a different, technical meaning (i.e. when a database record is connected to
 more other records). It is also useful to distinguish the person/organization itself from 
 the totality of your relationship with that person/organization.
 
-#### Create a New Entity
+### Create a New Entity
 
 ```php 
 use MonkeyPod\Api\Resources\Entity;
@@ -35,7 +36,7 @@ $person->create();
 $entity->id;
 ```
 
-#### Retrieve an Entity
+### Retrieve an Entity
 ```php 
 use MonkeyPod\Api\Resources\Entity;
 
@@ -46,7 +47,7 @@ $person->retrieve();
 $person->first_name; // Jane
 ```
 
-#### Update an Entity
+### Update an Entity
 
 ```php 
 use MonkeyPod\Api\Resources\Entity;
@@ -70,7 +71,7 @@ $nowNamedJohn->first_name; // John
 $nowNamedJohn->last_name;  // Jones
 ```
 
-#### Delete (or Deactivate) an Entity
+### Delete (or Deactivate) an Entity
 **Note:** An entity will only be deleted in MonkeyPod if that can be done 
 without violating data integrity. If the entity has associated transactions 
 or other related data, it will be deactivated instead.  
@@ -83,7 +84,7 @@ $person = new Entity($id);
 $person->delete();
 ```
 
-#### Match Existing Entities
+### Match Existing Entities
 ```EntityCollection``` resources can be asked to match against a comparator ```Entity```
 resource to find possible matches in your MonkeyPod database. You can attempt to 
 match against an ID, an email address, or a first and last name. Possible matches 
