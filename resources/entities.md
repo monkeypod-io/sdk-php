@@ -1,3 +1,9 @@
+---
+layout: default
+parent: API Resources
+nav_order: 1
+---
+
 ## Entities (a.k.a. "Relationships")
 
 **Note:** MonkeyPod's API uses the term "entity" to refer to what MonkeyPod itself calls
