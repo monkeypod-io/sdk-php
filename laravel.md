@@ -1,3 +1,8 @@
+---
+layout: default
+parent: Installation and Setup
+---
+
 ## Laravel
 This library uses a few components from the [Laravel](https://laravel.com) framework, 
 but it can be used with or without Laravel. If you do use Laravel, there is a test 
