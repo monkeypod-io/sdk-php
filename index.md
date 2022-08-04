@@ -5,5 +5,5 @@ The SDK provides useful abstractions of many core MonkeyPod resources. If you us
 [MonkeyPod Knowledgebase](https://monkeypod.helpscoutdocs.com/category/134-api?sort=).
 
 ## Table of Contents
-* [Installation and Setup](installation_and_setup.md)
-  * [A Note about Laravel](laravel.md)
+* [Installation and Setup](installation_and_setup)
+  * [A Note about Laravel](laravel)
