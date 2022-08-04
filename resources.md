@@ -1,3 +1,9 @@
+---
+layout: default
+nav_order: 3
+has_children: true
+---
+
 # API Resources
 Not all MonkeyPod data is available in the API, and not all actions are 
 available for each resource. As new resources are surfaced in the API
