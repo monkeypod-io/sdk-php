@@ -103,7 +103,9 @@ trait ActsAsResource
             // Retain the ID even if we're overwriting everything else
             $id = $this->data['id'] ?? $value['id'] ?? null;
             $this->data = $value;
-            $this->data['id'] = $id;
+            if (isset($id)) {
+                $this->data['id'] = $id;
+            }
 
         } else {
             data_set($this->data, $dotpath, $value);
