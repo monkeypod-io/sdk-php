@@ -4,4 +4,6 @@ avatar: "https://monkeypod.io/images/logo-horizontal.png"
 round-avatar: false
 
 navbar-links:
-  Intro: "index"
+  MonkeyPod: "https://monkeypod.io"
+  SDK: 
+    Intro: "index"
