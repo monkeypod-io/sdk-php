@@ -1,3 +1,10 @@
+---
+layout: default
+title: Installation and Setup
+nav_order: 2
+has_children: true
+---
+
 ## Installation
 Use Composer to install the SDK:
 
