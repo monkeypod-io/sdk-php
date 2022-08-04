@@ -1,3 +1,9 @@
+---
+layout: default
+parent: API Resources
+nav_order: 3
+---
+
 ## Entity Interactions
 
 #### Create an Entity Interaction
