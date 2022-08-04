@@ -6,7 +6,7 @@ nav_order: 3
 
 ## Entity Interactions
 
-#### Create an Entity Interaction
+### Create an Entity Interaction
 
 ```php 
 use MonkeyPod\Api\Resources\Entity;
@@ -46,7 +46,7 @@ $interaction->flag = 3;
 $interaction->create();
 ```
 
-#### Retrieve a Collection of Interactions for a Specific Entity
+### Retrieve a Collection of Interactions for a Specific Entity
 
 ```php 
 use MonkeyPod\Api\Resources\Entity;
