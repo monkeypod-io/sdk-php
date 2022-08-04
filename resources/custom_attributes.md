@@ -1,3 +1,9 @@
+---
+layout: default
+parent: API Resources
+nav_order: 2
+---
+
 ## Custom Attributes
 
 #### Retrieve a Collection of Custom Attributes
