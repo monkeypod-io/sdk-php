@@ -1,3 +1,9 @@
+---
+layout: default
+title: Introduction
+nav_order: 1
+---
+
 ## Welcome!
 This is the official PHP library for communicating with the [MonkeyPod](https://monkeypod.io) API. 
 
