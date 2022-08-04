@@ -89,7 +89,7 @@ use MonkeyPod\Api\Resources\Entity;
 $comparator = new Entity();
 $comparator->email = 'jane@example.com';
 
-$matches = new \MonkeyPod\Api\Resources\EntityCollection();
+$matches = new MonkeyPod\Api\Resources\EntityCollection();
 $matches->match($comparator);
 
 // or
@@ -98,6 +98,6 @@ $comparator = new Entity();
 $comparator->first_name = 'Jane';
 $comparator->last_name = 'Smith';
 
-$matches = new \MonkeyPod\Api\Resources\EntityCollection();
+$matches = new MonkeyPod\Api\Resources\EntityCollection();
 $matches->match($comparator);
 ```
