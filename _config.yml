@@ -1,2 +1,7 @@
 theme: jekyll-theme-slate
-title: MonkeyPod: PHP SDK
+title: "MonkeyPod: PHP SDK"
+avatar: "https://monkeypod.io/images/logo-horizontal.png"
+round-avatar: false
+
+navbar-links:
+  Intro: "index"
