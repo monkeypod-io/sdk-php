@@ -6,7 +6,7 @@ nav_order: 2
 
 ## Custom Attributes
 
-#### Retrieve a Collection of Custom Attributes
+### Retrieve a Collection of Custom Attributes
 ```php 
 use MonkeyPod\Api\Resources\EntityAttribute;
 use MonkeyPod\Api\Resources\EntityAttributeCollection;
