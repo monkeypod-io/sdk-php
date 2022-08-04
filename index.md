@@ -6,11 +6,11 @@ The SDK provides useful abstractions of many core MonkeyPod resources. If you us
 
 ## Table of Contents
 * [Installation and Setup](installation_and_setup)
- * [Laravel (optional)](laravel)
+  - [Laravel (optional)](laravel)
 * [API Resources](resources)
- * [Constructors](resources#Constructors)
- * [Required, optional, and additional/unlisted fields](resources#Required,+optional,+and+additional/unlisted+fields)
- * [Resource Collections](resources#Resource+Collections)
-  * [Pagination](resources#Pagination)
- * Available Resources
-  * [Entities (a.k.a. "Relationships")](resources/entities)
+  - [Constructors](resources#Constructors)
+  - [Required, optional, and additional/unlisted fields](resources#Required,+optional,+and+additional/unlisted+fields)
+  - [Resource Collections](resources#Resource+Collections)
+    - [Pagination](resources#Pagination)
+  - Available Resources
+    - [Entities (a.k.a. "Relationships")](resources/entities)
