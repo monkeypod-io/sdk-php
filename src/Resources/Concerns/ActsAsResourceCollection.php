@@ -36,6 +36,9 @@ trait ActsAsResourceCollection
      */
     public ?int $total = null;
 
+    /** @var array Array of filters to send as query string parameters when retrieving */
+    protected array $filters = [];
+
     protected ?string $firstPageUrl = null;
 
     protected ?string $prevPageUrl = null;
@@ -59,6 +62,11 @@ trait ActsAsResourceCollection
     public function count(): int
     {
         return count($this->resources);
+    }
+
+    public function first(): Resource
+    {
+        return collect($this->resources)->first();
     }
 
     /**
@@ -94,6 +102,7 @@ trait ActsAsResourceCollection
         parse_str($queryString, $queryParams);
 
         $queryParams['page'] = $page;
+        $queryParams += $this->filters;
         $modifiedQueryString = http_build_query($queryParams);
 
         $endpoint = str($base)
@@ -132,6 +141,24 @@ trait ActsAsResourceCollection
     public function shift(): ?Resource
     {
         return array_shift($this->resources);
+    }
+
+    public function __call($method, $args)
+    {
+        if (str_starts_with($method, "with")) {
+            $filter = str($method)->replaceFirst("with", "")->snake()->toString();
+
+            return $this->filter($filter, $args[0]);
+        }
+
+        throw new \BadMethodCallException("Invalid method $method");
+    }
+
+    protected function filter(string $dotpath, mixed $value): static
+    {
+        Arr::set($this->filters, $dotpath, $value);
+
+        return $this;
     }
 
     /**

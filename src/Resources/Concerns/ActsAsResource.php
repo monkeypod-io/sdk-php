@@ -2,6 +2,7 @@
 
 namespace MonkeyPod\Api\Resources\Concerns;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use MonkeyPod\Api\Client;
 use MonkeyPod\Api\Exception\ApiResponseError;
@@ -14,6 +15,8 @@ use MonkeyPod\Api\Exception\InvalidUuidException;
 trait ActsAsResource
 {
     protected array $data = [];
+
+    protected array $links = [];
 
     protected Client $apiClient;
 
@@ -41,35 +44,47 @@ trait ActsAsResource
     }
 
     /**
+     * Create a new record from the resource
+     *
      * @throws IncompleteConfigurationException
      * @throws ApiResponseError
      */
-    public function create(array $data = null): static
+    public function create(array $data = []): static
     {
         $endpoint = $this->getBaseEndpoint();
-        $data ??= $this->data;
+        $data = array_merge_recursive($this->data, $data);
+        $response = $this->apiClient->post($endpoint, $data);
 
-        $this->data = $this->apiClient->post($endpoint, $data)['data'];
+        $this->data = $response['data'];
+        $this->links = $response['links'] ?? [];
+
         $this->hydrateNestedResources();
 
         return $this;
     }
 
     /**
+     * Retrieve resource data from the API
+     *
      * @throws IncompleteConfigurationException
      * @throws ApiResponseError
      */
     public function retrieve(): static
     {
         $endpoint = $this->getSpecificEndpoint();
+        $response = $this->apiClient->get($endpoint);
 
-        $this->data = $this->apiClient->get($endpoint)['data'];
+        $this->data = $response['data'];
+        $this->links = $response['links'] ?? [];
+
         $this->hydrateNestedResources();
 
         return $this;
     }
 
     /**
+     * Update a record from the resource's updated properties
+     *
      * @throws IncompleteConfigurationException
      * @throws ApiResponseError
      */
@@ -85,6 +100,8 @@ trait ActsAsResource
     }
 
     /**
+     * Delete (or deactivate) a record corresponding to the resource
+     *
      * @throws IncompleteConfigurationException
      * @throws ApiResponseError
      */
@@ -117,6 +134,17 @@ trait ActsAsResource
     public function get($dotpath = null): mixed
     {
         return data_get($this->data, $dotpath);
+    }
+
+    /**
+     * Get a URL from the metadata links returned from the API
+     *
+     * @param string $ref
+     * @return string|null
+     */
+    public function getLink(string $ref): ?string
+    {
+        return Arr::get($this->links, $ref);
     }
 
     public function __get(string $name): mixed

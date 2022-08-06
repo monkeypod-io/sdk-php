@@ -37,6 +37,6 @@ class EntityCollection implements ResourceCollection
      */
     public function getBaseEndpoint(): string
     {
-        return $this->entity->interaction()->getBaseEndpoint();
+        return (new Entity($this->apiClient))->getBaseEndpoint();
     }
 }
