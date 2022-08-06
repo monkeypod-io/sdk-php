@@ -1,6 +1,7 @@
 ---
 layout: default
 parent: API Resources
+nav_order: 7
 ---
 
 ## Fund Releases
@@ -27,4 +28,7 @@ use MonkeyPod\Api\Resources\Transactions\FundRelease;
 
 $fundRelease = new FundRelease($id);
 $fundRelease->retrieve();
+
+// URL to view fund release in MonkeyPod
+$fundRelease->getLink('self');
 ```

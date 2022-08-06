@@ -27,6 +27,15 @@ that includes all relevant custom attributes assigned to that entity. Because
 each MonkeyPod organization has its own custom attributes, these vary from
 organization to organization and cannot be centrally documented.
 
+### Resource links
+MonkeyPod's API often includes metadata about URLs relevant to a particular
+resource. These links can be accessed by key, as in:
+
+```php 
+// The 'self' link, when present, is a URL in MonkeyPod where the record can be viewed
+$resource->getLink('self');
+```
+
 ## Resource Collections
 Resource collection classes implement the ```ResourceCollection``` interface and
 are created when you request a group of records from the API.
