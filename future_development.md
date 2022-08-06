@@ -1,13 +1,8 @@
 ---
-nav_order: 99
+nav_order: 999
 ---
 
 ## Future Development
-  - Accounts
-    - Retrieve account
-    - Retrieve collection of accounts
-      - Filtered by type and/or subtype
-      - Include inactive
   - Classes
     - Retrieve class
     - Retrieve collection of classes
@@ -28,7 +23,6 @@ nav_order: 99
     * Update a sale
     * Delete a sale
   * Tags
-    * Retrieve tag
     * Retrieve collection of tags
       * All tags
       * By type 
