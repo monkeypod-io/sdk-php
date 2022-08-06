@@ -1,7 +1,7 @@
 ---
 layout: default
 parent: API Resources
-title: Entities
+title: Accounts
 nav_order: 5
 ---
 
