@@ -29,7 +29,7 @@ class EntityCollection implements ResourceCollection
 
     protected function buildResource(array $data): Resource
     {
-        return (new Entity())->set(null, $data);
+        return (new Entity($this->apiClient))->set(null, $data);
     }
 
     /**

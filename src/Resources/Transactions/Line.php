@@ -15,7 +15,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @property null|string    $grant_id       The UUID of the grant associated with the line
  * @property null|string    $memo           A description of the line
  */
-class Line implements Resource
+class Line implements Resource, \JsonSerializable
 {
     use ActsAsResource;
 

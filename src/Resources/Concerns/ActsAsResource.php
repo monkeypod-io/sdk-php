@@ -4,10 +4,16 @@ namespace MonkeyPod\Api\Resources\Concerns;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use MonkeyPod\Api\Attributes\AccessibleProperty;
 use MonkeyPod\Api\Client;
 use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
 use MonkeyPod\Api\Exception\InvalidUuidException;
+use MonkeyPod\Api\Resources\Contracts\Resource;
+use phpDocumentor\Reflection\DocBlock\Tags\Property;
+use phpDocumentor\Reflection\DocBlock\Tags\PropertyRead;
+use phpDocumentor\Reflection\DocBlock\Tags\PropertyWrite;
+use phpDocumentor\Reflection\DocBlockFactory;
 
 /**
  * @property string $id
@@ -19,6 +25,8 @@ trait ActsAsResource
     protected array $links = [];
 
     protected Client $apiClient;
+
+    protected static array $accessibleProperties;
 
     /**
      * @throws InvalidUuidException
@@ -157,6 +165,24 @@ trait ActsAsResource
         $this->set($name, $value);
     }
 
+    public function __call(string $method, array $arguments = []): mixed
+    {
+        if (! str_starts_with($method, "set") && ! str_starts_with($method, "get")) {
+            throw new \BadMethodCallException("Method $method does not exist");
+        }
+
+        $property = substr($method, 3);
+        $documentedProperties = static::getAccessibleProperties();
+
+        if (! array_key_exists($property, $documentedProperties)) {
+            throw new \InvalidArgumentException("Failed to handle getter/setter $method");
+        }
+
+        return str_starts_with($method, "set")
+            ? $this->set($documentedProperties[$property], $arguments[0])
+            : $this->get($documentedProperties[$property]);
+    }
+
     public function hydrateNestedResources(): void
     {
         // Override in resource classes
@@ -173,5 +199,49 @@ trait ActsAsResource
     public function getApiClient(): Client
     {
         return $this->apiClient;
+    }
+
+    public function fill(array $properties): static
+    {
+        foreach ($properties as $key => $value) {
+            $this->$key = $value;
+        }
+
+        return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return array    A key-value dictionary of getter/setter methods and corresponding data keys
+     */
+    static protected function getAccessibleProperties(): array
+    {
+        if (! isset(static::$accessibleProperties)) {
+            // First get the phpdoc documented properties
+            $reflection = new \ReflectionClass(static::class);
+            $docblock = DocBlockFactory::createInstance()->create($reflection->getDocComment());
+            static::$accessibleProperties = collect()
+                ->merge($docblock->getTagsByName("property"))
+                ->merge($docblock->getTagsByName("property-read"))
+                ->merge($docblock->getTagsByName("property-write"))
+                ->mapWithKeys(
+                    fn ($property) => [Str::studly($property->getVariableName()) => $property->getVariableName()]
+                )
+                ->toArray();
+
+            // Then get the nested stuff that's defined by attributes
+            collect($reflection->getAttributes(AccessibleProperty::class))
+                ->each(function (\ReflectionAttribute $attribute) {
+                    /** @var AccessibleProperty $attributeInstance */
+                    $attributeInstance = $attribute->newInstance();
+                    static::$accessibleProperties[$attributeInstance->accessorMutator] = $attributeInstance->key;
+                });
+        }
+
+        return static::$accessibleProperties;
     }
 }
