@@ -217,16 +217,22 @@ class Client
      * Can be used to substitute a Laravel test case
      * instead of the real Http client.
      * 
-     * @param Illuminate\Foundation\Testing\TestCase $testCase
+     * @param Illuminate\Foundation\Testing\TestCase | false $testCase
      * @return $this
      * @noinspection PhpUndefinedNamespaceInspection
      * @noinspection PhpUndefinedClassInspection
      */
     public function withLaravelTestCase($testCase): static
     {
-        $this->testMode = true;
-        $this->verifySsl = false;
-        $this->testClient = $testCase;
+        if (false === $testCase) {
+            $this->testMode = false;
+            $this->verifySsl = true;
+            $this->testClient = null;
+        } else {
+            $this->testMode = true;
+            $this->verifySsl = false;
+            $this->testClient = $testCase;
+        }
 
         return $this;
     }

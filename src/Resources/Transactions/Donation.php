@@ -2,8 +2,10 @@
 
 namespace MonkeyPod\Api\Resources\Transactions;
 
+use Illuminate\Support\Arr;
 use MonkeyPod\Api\Attributes\AccessibleProperty;
 use MonkeyPod\Api\Resources\Concerns\ActsAsResource;
+use MonkeyPod\Api\Resources\Concerns\HasMetadata;
 use MonkeyPod\Api\Resources\Contracts\Resource;
 
 /**
@@ -17,6 +19,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @property ?array         $fee                        An array of data on fees or processing expenses. See relevant setter methods.
  * @property ?array         $tags                       An array of tags to apply to the donation
  * @property ?array         $class_id                   The UUID of the class to apply to the donation
+ * @property ?array         $metadata                   Associative array of metadata to associate with the donation
  * @property ?string        $created_at                 An ISO 8601 formatted timestamp when the record was created
  * @property ?string        $updated_at                 An ISO 8601 formatted timestamp when the record was last updated
  *
@@ -63,7 +66,8 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
 #[AccessibleProperty('FeeMemo', 'fee.memo')]
 class Donation implements Resource
 {
-    use ActsAsResource;
+    use ActsAsResource,
+        HasMetadata;
 
     public function getBaseEndpoint(): string
     {
