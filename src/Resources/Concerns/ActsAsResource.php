@@ -26,6 +26,8 @@ trait ActsAsResource
 
     protected Client $apiClient;
 
+    protected ?string $idempotencyKey = null;
+
     protected static array $accessibleProperties;
 
     /**
@@ -61,7 +63,12 @@ trait ActsAsResource
     {
         $endpoint = $this->getBaseEndpoint();
         $data = array_merge_recursive($this->data, $data);
-        $response = $this->apiClient->post($endpoint, $data);
+
+        $headers = isset($this->idempotencyKey)
+            ? ['X-MonkeyPod-IdempotencyKey' => $this->idempotencyKey]
+            : [];
+
+        $response = $this->apiClient->post($endpoint, $data, $headers);
 
         $this->data = $response['data'];
         $this->links = $response['links'] ?? [];
@@ -206,6 +213,13 @@ trait ActsAsResource
         foreach ($properties as $key => $value) {
             $this->$key = $value;
         }
+
+        return $this;
+    }
+
+    public function idempotencyKey(?string $key): static
+    {
+        $this->idempotencyKey = $key;
 
         return $this;
     }

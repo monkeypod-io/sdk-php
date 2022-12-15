@@ -2,7 +2,6 @@
 
 namespace MonkeyPod\Api\Resources\Transactions;
 
-use Illuminate\Support\Arr;
 use MonkeyPod\Api\Attributes\AccessibleProperty;
 use MonkeyPod\Api\Resources\Concerns\ActsAsResource;
 use MonkeyPod\Api\Resources\Concerns\HasMetadata;

@@ -2,8 +2,14 @@
 
 namespace MonkeyPod\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Client\Factory as HttpClient;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Validation\UnauthorizedException;
+use MonkeyPod\Api\Events\ApiCallCompleted;
 use MonkeyPod\Api\Exception\ApiResponseError;
 use MonkeyPod\Api\Exception\IncompleteConfigurationException;
 use MonkeyPod\Api\Exception\InvalidRequestException;
@@ -110,7 +116,10 @@ class Client
             ->acceptJson()
             ->withOptions(['verify' => $this->verifySsl])
             ->get($endpoint)
-            ->onError(function (Response $response) {
+            ->onError(function (Response $response) use ($endpoint) {
+
+                $this->broadcastApiCallCompletedEvent($endpoint, "GET", $response);
+
                 throw match ($response->status()) {
                     404 => new ResourceNotFoundException(),
                     default => (new ApiResponseError())
@@ -119,31 +128,42 @@ class Client
                 };
             });
 
+        $this->broadcastApiCallCompletedEvent($endpoint, "GET", $response);
+
         return $response->json();
     }
 
     /**
      * @throws ApiResponseError
      */
-    public function post($endpoint, array $data): ?array
+    public function post($endpoint, array $data, array $headers = []): ?array
     {
         if ($this->testMode) {
-            return $this->postTest($endpoint, $data);
+            return $this->postTest($endpoint, $data, $headers);
         }
 
-        return $this->httpClient
+        $response = $this->httpClient
             ->withToken($this->apiKey)
             ->acceptJson()
+            ->withHeaders($headers)
             ->withOptions(['verify' => $this->verifySsl])
             ->post($endpoint, $data)
-            ->onError(function (Response $response) {
+            ->onError(function (Response $response) use ($endpoint) {
+
+                $this->broadcastApiCallCompletedEvent($endpoint, "POST", $response);
+
                 throw match ($response->status()) {
+                    401 => new AuthenticationException("Unauthenticated"),
+                    403 => new UnauthorizedException("Unauthorized"),
                     404 => new ResourceNotFoundException(),
                     422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
                     default => (new ApiResponseError())->setHttpStatus($response->status()),
                 };
-            })
-            ->json();
+            });
+
+        $this->broadcastApiCallCompletedEvent($endpoint, "POST", $response);
+
+        return $response->json();
     }
 
     /**
@@ -155,19 +175,25 @@ class Client
             return $this->putTest($endpoint, $data);
         }
 
-        return $this->httpClient
+        $response = $this->httpClient
             ->withToken($this->apiKey)
             ->acceptJson()
             ->withOptions(['verify' => $this->verifySsl])
             ->put($endpoint, $data)
-            ->onError(function (Response $response) {
+            ->onError(function (Response $response) use ($endpoint) {
+
+                $this->broadcastApiCallCompletedEvent($endpoint, "PUT", $response);
+
                 throw match ($response->status()) {
                     404 => new ResourceNotFoundException(),
                     422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
                     default => (new ApiResponseError())->setHttpStatus($response->status()),
                 };
-            })
-            ->json();
+            });
+
+        $this->broadcastApiCallCompletedEvent($endpoint, "PUT", $response);
+
+        return $response->json();
     }
 
     /**
@@ -179,18 +205,24 @@ class Client
             return $this->deleteTest($endpoint);
         }
 
-        $this->httpClient
+        $response = $this->httpClient
             ->withToken($this->apiKey)
             ->acceptJson()
             ->withOptions(['verify' => $this->verifySsl])
             ->delete($endpoint)
-            ->onError(function (Response $response) {
+            ->onError(function (Response $response) use ($endpoint) {
+
+                $this->broadcastApiCallCompletedEvent($endpoint, "DELETE", $response);
+
                 throw match ($response->status()) {
+                    403 => new AuthorizationException(),
                     404 => new ResourceNotFoundException(),
                     422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
                     default => (new ApiResponseError())->setHttpStatus($response->status()),
                 };
             });
+
+        $this->broadcastApiCallCompletedEvent($endpoint, "DELETE", $response);
 
         return true;
     }
@@ -237,11 +269,14 @@ class Client
         return $this;
     }
 
-    protected function postTest($endpoint, array $data): ?array
+    protected function postTest($endpoint, array $data, array $headers = []): ?array
     {
         $response = $this->testClient
             ->withToken($this->apiKey)
+            ->withHeaders($headers)
             ->postJson($endpoint, $data);
+
+        $this->broadcastApiCallCompletedEvent($endpoint, "POST", $response);
 
         if ($response->isSuccessful()) {
             return $response->json();
@@ -260,6 +295,8 @@ class Client
             ->withToken($this->apiKey)
             ->putJson($endpoint, $data);
 
+        $this->broadcastApiCallCompletedEvent($endpoint, "PUT", $response);
+
         if ($response->isSuccessful()) {
             return $response->json();
         }
@@ -277,11 +314,14 @@ class Client
             ->withToken($this->apiKey)
             ->deleteJson($endpoint);
 
+        $this->broadcastApiCallCompletedEvent($endpoint, "DELETE", $response);
+
         if ($response->isSuccessful()) {
             return true;
         }
 
         throw match ($response->status()) {
+            403 => new AuthorizationException(),
             404 => new ResourceNotFoundException(),
             422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
             default => (new ApiResponseError())->setHttpStatus($response->status()),
@@ -294,15 +334,28 @@ class Client
             ->withToken($this->apiKey)
             ->getJson($endpoint);
 
+        $this->broadcastApiCallCompletedEvent($endpoint, "GET", $response);
+
         if ($response->isSuccessful()) {
             return $response->json();
         }
 
         throw match ($response->status()) {
+            401,
+            403 => new AuthorizationException(),
             404 => new ResourceNotFoundException(),
             422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
             default => (new ApiResponseError())->setHttpStatus($response->status()),
         };
+    }
+
+    protected function broadcastApiCallCompletedEvent($endpoint, $method, $response): void
+    {
+        try {
+            ApiCallCompleted::dispatch($endpoint, $method, $response);
+        } catch (BindingResolutionException $e) {
+            // Ignore this. Applications that want to use event broadcasting will have this available.
+        }
     }
 
     public static function __callStatic(string $name, array $arguments)
