@@ -9,10 +9,20 @@ use MonkeyPod\Api\Resources\Concerns\AttachedToEntity;
 use MonkeyPod\Api\Resources\Contracts\Resource;
 use MonkeyPod\Api\Resources\Contracts\ResourceCollection;
 
+/**
+ * @method  Entity|null first()
+ */
 class EntityCollection implements ResourceCollection
 {
     use ActsAsResourceCollection;
 
+    /**
+     * @param Entity $entity
+     * @return EntityCollection&Entity[]
+     * @throws IncompleteConfigurationException
+     * @throws InvalidUuidException
+     * @throws \MonkeyPod\Api\Exception\ApiResponseError
+     */
     public function match(Entity $entity)
     {
         $endpoint = $entity->getBaseEndpoint() . '/match';

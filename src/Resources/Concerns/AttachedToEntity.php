@@ -50,7 +50,7 @@ trait AttachedToEntity
 
     public static function forEntity(Entity $entity, ?string $resourceId = null): static
     {
-        $resource = new static;
+        $resource = new static($entity->getApiClient());
         $resource->apiClient = $entity->getApiClient();
         $resource->entity = $entity;
 
