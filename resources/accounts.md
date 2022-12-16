@@ -2,7 +2,7 @@
 layout: default
 parent: API Resources
 title: Accounts
-nav_order: 5
+nav_order: 10
 ---
 
 ## Accounts

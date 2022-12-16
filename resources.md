@@ -27,6 +27,21 @@ that includes all relevant custom attributes assigned to that entity. Because
 each MonkeyPod organization has its own custom attributes, these vary from
 organization to organization and cannot be centrally documented.
 
+### Getters and Setters
+Resource properties can be set or retrieved directly or through the use
+of getter and methods (either magic or explicitly defined). These are 
+sometimes documented in a resource class's phpdoc comments, which may 
+be helpful when a resource relies on complex, nested data structures.
+
+Setters support fluent method-chaining, such as:
+
+```php 
+$donation
+    ->setGiftAmount("100.00")
+    ->setGiftMemo("a crisp new Ben Franklin")
+    ->setTags(["Cash Gift", "Annual Campaign"])
+```
+
 ### Resource links
 MonkeyPod's API often includes metadata about URLs relevant to a particular
 resource. These links can be accessed by key, as in:
