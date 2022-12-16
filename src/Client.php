@@ -258,7 +258,6 @@ class Client
     {
         if (false === $testCase) {
             $this->testMode = false;
-            $this->verifySsl = true;
             $this->testClient = null;
         } else {
             $this->testMode = true;
