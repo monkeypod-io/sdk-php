@@ -9,6 +9,7 @@ use MonkeyPod\Api\Exception\IncompleteConfigurationException;
 use MonkeyPod\Api\Exception\InvalidResourceException;
 use MonkeyPod\Api\Exception\InvalidUuidException;
 use MonkeyPod\Api\Resources\Concerns\ActsAsResource;
+use MonkeyPod\Api\Resources\Concerns\HasMetadata;
 use MonkeyPod\Api\Resources\Contracts\Resource;
 
 /**
@@ -30,6 +31,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @property string                 $postal_code        The entity's zip code or postal code
  * @property string                 $country            The entity's country
  * @property array&EntityPhone[]    $phones             An array of EntityPhone objects
+ * @property string                 $parent_id          The unique ID of a parent entity under which this entity is householded, a UUID
  * @property array&string[]         $roles              An array of the entity's roles
  * @property array                  $extra_attributes   An array of custom attributes, keyed by the attributes' unique slugs
  * @property boolean                $active             Whether the entity is active or has been deactivated
@@ -39,6 +41,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
 class Entity implements Resource
 {
     use ActsAsResource;
+    use HasMetadata;
 
     public function interaction($interactionId = null): EntityInteraction
     {
