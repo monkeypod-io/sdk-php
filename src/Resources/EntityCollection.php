@@ -30,6 +30,7 @@ class EntityCollection implements ResourceCollection
             'id' => $entity->id,
             'email' => $entity->email,
             'name' => $entity->getFullName(),
+            'metadata' => $entity->getMetadata(),
         ]));
 
         $response = $this->apiClient->get("$endpoint?$queryString");
