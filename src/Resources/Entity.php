@@ -67,7 +67,7 @@ class Entity implements Resource
     public function hydrateNestedResources(): void
     {
         foreach ($this->get("phones") ?? [] as $key => $value) {
-            $phone = new EntityPhone($value['id']);
+            $phone = new EntityPhone($this->apiClient, $value['id']);
             $phone->set(null, $value);
 
             $this->set("phones.$key", $phone);
