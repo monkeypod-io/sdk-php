@@ -64,7 +64,7 @@ trait ActsAsResourceCollection
         return count($this->resources);
     }
 
-    public function first(): Resource
+    public function first(): ?Resource
     {
         return collect($this->resources)->first();
     }
