@@ -53,6 +53,11 @@ class Entity implements Resource
         return EntityInteractionCollection::forEntity($this);
     }
 
+    public function subscription(): EntitySubscription
+    {
+        return EntitySubscription::forEntity($this);
+    }
+
     public function setExtraAttribute(string $slug, mixed $value): static
     {
         $this->set("extra_attributes.$slug", $value);
