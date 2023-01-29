@@ -32,7 +32,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @property string                 $country            The entity's country
  * @property array&EntityPhone[]    $phones             An array of EntityPhone objects
  * @property string                 $parent_id          The unique ID of a parent entity under which this entity is householded, a UUID
- * @property array&string[]         $roles              An array of the entity's roles
+ * @property array<string>          $roles              An array of the entity's roles
  * @property array                  $extra_attributes   An array of custom attributes, keyed by the attributes' unique slugs
  * @property boolean                $active             Whether the entity is active or has been deactivated
  * @property string                 $created_at         An ISO 8601 formatted timestamp when the entity record was created
