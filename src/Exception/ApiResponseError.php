@@ -10,6 +10,24 @@ class ApiResponseError extends \Exception
 
     public array $errors = [];
 
+    public string $endpoint;
+
+    public string $method;
+
+    public function setEndpoint($endpoint): static
+    {
+        $this->endpoint = $endpoint;
+        
+        return $this;
+    }
+    
+    public function setMethod($method): static
+    {
+        $this->method = $method;
+        
+        return $this;
+    }
+
     public function setHttpStatus($status): static
     {
         $this->httpStatus = $status;

@@ -8,6 +8,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Client\Factory as HttpClient;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Testing\TestResponse;
 use Illuminate\Validation\UnauthorizedException;
 use MonkeyPod\Api\Events\ApiCallCompleted;
 use MonkeyPod\Api\Exception\ApiResponseError;
@@ -122,9 +123,7 @@ class Client
 
                 throw match ($response->status()) {
                     404 => new ResourceNotFoundException(),
-                    default => (new ApiResponseError())
-                        ->setHttpStatus($response->status())
-                        ->setErrors($response->json("errors", []))
+                    default => $this->makeApiResponseError($response, "GET", $endpoint),
                 };
             });
 
@@ -157,7 +156,7 @@ class Client
                     403 => new UnauthorizedException("Unauthorized"),
                     404 => new ResourceNotFoundException(),
                     422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
-                    default => (new ApiResponseError())->setHttpStatus($response->status()),
+                    default => $this->makeApiResponseError($response, "POST", $endpoint),
                 };
             });
 
@@ -187,7 +186,7 @@ class Client
                 throw match ($response->status()) {
                     404 => new ResourceNotFoundException(),
                     422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
-                    default => (new ApiResponseError())->setHttpStatus($response->status()),
+                    default => $this->makeApiResponseError($response, "PUT", $endpoint),
                 };
             });
 
@@ -218,7 +217,7 @@ class Client
                     403 => new AuthorizationException(),
                     404 => new ResourceNotFoundException(),
                     422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
-                    default => (new ApiResponseError())->setHttpStatus($response->status()),
+                    default => $this->makeApiResponseError($response, "DELETE", $endpoint),
                 };
             });
 
@@ -284,7 +283,7 @@ class Client
         throw match ($response->status()) {
             404 => new ResourceNotFoundException(),
             422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
-            default => (new ApiResponseError())->setHttpStatus($response->status()),
+            default => $this->makeApiResponseError($response, "POST", $endpoint),
         };
     }
 
@@ -303,7 +302,7 @@ class Client
         throw match ($response->status()) {
             404 => new ResourceNotFoundException(),
             422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
-            default => (new ApiResponseError())->setHttpStatus($response->status()),
+            default => $this->makeApiResponseError($response, "PUT", $endpoint),
         };
     }
 
@@ -323,7 +322,7 @@ class Client
             403 => new AuthorizationException(),
             404 => new ResourceNotFoundException(),
             422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
-            default => (new ApiResponseError())->setHttpStatus($response->status()),
+            default => $this->makeApiResponseError($response, "DELETE", $endpoint),
         };
     }
 
@@ -344,7 +343,7 @@ class Client
             403 => new AuthorizationException(),
             404 => new ResourceNotFoundException(),
             422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
-            default => (new ApiResponseError())->setHttpStatus($response->status()),
+            default => $this->makeApiResponseError($response, "GET", $endpoint),
         };
     }
 
@@ -355,6 +354,15 @@ class Client
         } catch (BindingResolutionException $e) {
             // Ignore this. Applications that want to use event broadcasting will have this available.
         }
+    }
+
+    protected function makeApiResponseError(Response | TestResponse $response, string $method, string $endpoint): ApiResponseError
+    {
+        return (new ApiResponseError())
+            ->setHttpStatus($response->status())
+            ->setErrors($response->json("errors") ?? [])
+            ->setMethod($method)
+            ->setEndpoint($endpoint);
     }
 
     public static function __callStatic(string $name, array $arguments)
