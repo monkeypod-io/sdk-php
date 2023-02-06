@@ -155,7 +155,7 @@ class Client
                     401 => new AuthenticationException("Unauthenticated"),
                     403 => new UnauthorizedException("Unauthorized"),
                     404 => new ResourceNotFoundException(),
-                    422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+                    422 => $this->makeInvalidRequestException($response, "POST", $endpoint),
                     default => $this->makeApiResponseError($response, "POST", $endpoint),
                 };
             });
@@ -185,7 +185,7 @@ class Client
 
                 throw match ($response->status()) {
                     404 => new ResourceNotFoundException(),
-                    422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+                    422 => $this->makeInvalidRequestException($response, "PUT", $endpoint),
                     default => $this->makeApiResponseError($response, "PUT", $endpoint),
                 };
             });
@@ -216,7 +216,7 @@ class Client
                 throw match ($response->status()) {
                     403 => new AuthorizationException(),
                     404 => new ResourceNotFoundException(),
-                    422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+                    422 => $this->makeInvalidRequestException($response, "DELETE", $endpoint),
                     default => $this->makeApiResponseError($response, "DELETE", $endpoint),
                 };
             });
@@ -282,7 +282,7 @@ class Client
 
         throw match ($response->status()) {
             404 => new ResourceNotFoundException(),
-            422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+            422 => $this->makeInvalidRequestException($response, "POST", $endpoint),
             default => $this->makeApiResponseError($response, "POST", $endpoint),
         };
     }
@@ -301,7 +301,7 @@ class Client
 
         throw match ($response->status()) {
             404 => new ResourceNotFoundException(),
-            422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+            422 => $this->makeInvalidRequestException($response, "PUT", $endpoint),
             default => $this->makeApiResponseError($response, "PUT", $endpoint),
         };
     }
@@ -321,7 +321,7 @@ class Client
         throw match ($response->status()) {
             403 => new AuthorizationException(),
             404 => new ResourceNotFoundException(),
-            422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+            422 => $this->makeInvalidRequestException($response, "DELETE", $endpoint),
             default => $this->makeApiResponseError($response, "DELETE", $endpoint),
         };
     }
@@ -342,7 +342,7 @@ class Client
             401,
             403 => new AuthorizationException(),
             404 => new ResourceNotFoundException(),
-            422 => (new InvalidRequestException())->setErrors($response->json("errors", [])),
+            422 => $this->makeInvalidRequestException($response, "GET", $endpoint),
             default => $this->makeApiResponseError($response, "GET", $endpoint),
         };
     }
@@ -356,9 +356,26 @@ class Client
         }
     }
 
-    protected function makeApiResponseError(Response | TestResponse $response, string $method, string $endpoint): ApiResponseError
+    protected function makeApiResponseError(
+        Response | TestResponse $response,
+        string $method,
+        string $endpoint
+    ): ApiResponseError
     {
         return (new ApiResponseError())
+            ->setHttpStatus($response->status())
+            ->setErrors($response->json("errors") ?? [])
+            ->setMethod($method)
+            ->setEndpoint($endpoint);
+    }
+
+    protected function makeInvalidRequestException(
+        Response | TestResponse $response,
+        string $method,
+        string $endpoint
+    ): InvalidRequestException
+    {
+        return (new InvalidRequestException())
             ->setHttpStatus($response->status())
             ->setErrors($response->json("errors") ?? [])
             ->setMethod($method)
