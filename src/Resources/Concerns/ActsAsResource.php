@@ -3,6 +3,7 @@
 namespace MonkeyPod\Api\Resources\Concerns;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use MonkeyPod\Api\Attributes\AccessibleProperty;
 use MonkeyPod\Api\Client;
@@ -138,6 +139,9 @@ trait ActsAsResource
             if (isset($id)) {
                 $this->data['id'] = $id;
             }
+
+        } elseif (in_array($dotpath, $this->dates ?? [])) {
+            data_set($this->data, $dotpath, Carbon::make($value)->toDateString());
 
         } else {
             data_set($this->data, $dotpath, $value);

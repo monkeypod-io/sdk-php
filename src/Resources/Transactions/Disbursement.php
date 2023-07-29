@@ -21,6 +21,10 @@ class Disbursement implements Resource
 {
     use ActsAsResource;
 
+    protected array $dates = [
+        'date',
+    ];
+    
     public function getBaseEndpoint(): string
     {
         return $this->apiClient->getBaseUri() . 'disbursements';

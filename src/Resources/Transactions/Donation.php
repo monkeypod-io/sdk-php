@@ -2,6 +2,7 @@
 
 namespace MonkeyPod\Api\Resources\Transactions;
 
+use Carbon\Carbon;
 use MonkeyPod\Api\Attributes\AccessibleProperty;
 use MonkeyPod\Api\Resources\Concerns\ActsAsResource;
 use MonkeyPod\Api\Resources\Concerns\HasMetadata;
@@ -22,7 +23,6 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @property ?string        $created_at                 An ISO 8601 formatted timestamp when the record was created
  * @property ?string        $updated_at                 An ISO 8601 formatted timestamp when the record was last updated
  *
- * @method  Donation setDate(string $date)
  * @method  Donation setMemo(string $memo)
  * @method  Donation setDonorId(string $donorId)
  * @method  Donation setAssetAccountId(string $assetAccountId)
@@ -65,9 +65,13 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
 #[AccessibleProperty('FeeMemo', 'fee.memo')]
 class Donation implements Resource
 {
-    use ActsAsResource,
-        HasMetadata;
+    use ActsAsResource;
+    use HasMetadata;
 
+    protected array $dates = [
+        'date',
+    ];
+    
     public function getBaseEndpoint(): string
     {
         return $this->apiClient->getBaseUri() . "donations";
