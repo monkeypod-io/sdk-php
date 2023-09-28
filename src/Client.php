@@ -5,6 +5,7 @@ namespace MonkeyPod\Api;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Http\Client\Factory as HttpClient;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Event;
@@ -349,6 +350,11 @@ class Client
 
     protected function broadcastApiCallCompletedEvent($endpoint, $method, $response): void
     {
+        if (! trait_exists(Dispatchable::class)) {
+            // Bail. Applications that want to use event broadcasting will have this available.
+            return;
+        }
+
         try {
             ApiCallCompleted::dispatch($endpoint, $method, $response);
         } catch (BindingResolutionException $e) {
