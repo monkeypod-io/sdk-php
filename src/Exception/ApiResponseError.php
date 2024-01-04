@@ -41,4 +41,13 @@ class ApiResponseError extends \Exception
 
         return $this;
     }
+    
+    public function errors(string $key = null): array
+    {
+        if (is_null($key)) {
+            return $this->errors;
+        }
+        
+        return $this->errors[$key] ?? [];
+    }
 }
