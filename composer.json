@@ -22,12 +22,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Monkeypod\\Api\\": "src"
+            "MonkeyPod\\Api\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Monkeypod\\Api\\Tests\\": "tests"
+            "MonkeyPod\\Api\\Tests\\": "tests"
         }
     }
 }
