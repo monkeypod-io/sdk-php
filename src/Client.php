@@ -33,13 +33,15 @@ class Client
 
     protected bool $testMode = false;
 
+    protected mixed $testCase = null;
+
     /**
      * @var Illuminate\Foundation\Testing\TestCase
      * @noinspection PhpUndefinedNamespaceInspection
      * @noinspection PhpUndefinedClassInspection
      */
     private $laravelTestCase;
-    
+
     private static Client $singleton;
 
     public function __construct()
@@ -248,7 +250,7 @@ class Client
     /**
      * Can be used to substitute a Laravel test case
      * instead of the real Http client.
-     * 
+     *
      * @param Illuminate\Foundation\Testing\TestCase | false $testCase
      * @return $this
      * @noinspection PhpUndefinedNamespaceInspection
