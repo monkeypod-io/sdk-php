@@ -17,7 +17,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @property strung     $cycle          Either "Monthly" or "Annual"
  * @property string     $status         The membership's status
  * @property string     $start_date     The start date
- * @property string     $end_date       The end date
+ * @property string     $paid_through   The paid through date
  * @property string     $created_at     An ISO 8601 formatted timestamp when the record was created
  * @property string     $updated_at     An ISO 8601 formatted timestamp when the record was last updated
  */
