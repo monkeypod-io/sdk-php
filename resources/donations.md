@@ -38,7 +38,7 @@ $donation->getLink('self');
 ### Retrieve a Donation Collection
 
 ```php
-use \MonkeyPod\Api\Resources\Transactions\DonationCollection;
+use MonkeyPod\Api\Resources\Transactions\DonationCollection;
 
 $donations = new DonationCollection();
 $donations->withStartDate('2021-01-20');
