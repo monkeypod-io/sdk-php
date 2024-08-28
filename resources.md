@@ -55,6 +55,31 @@ $resource->getLink('self');
 Resource collection classes implement the ```ResourceCollection``` interface and
 are created when you request a group of records from the API.
 
+### Filters
+When retrieving a resource collection, you will often have the option of
+filtering results based on one or more search criteria. Available filters
+are documented as methods on resource collection classes, and follow the naming
+convention ```withXyz()```.
+
+For example, when retrieving a collection of Accounts, you can filter results
+by the type and/or subtype of Account:
+
+```php 
+$accounts = new AccountCollection();
+$accounts->withType("Expense");
+$accounts->withSubtype("Operating");
+$accounts->retrieve();
+```
+
+Filters may also be chained:
+
+```php 
+$accounts = (new AccountCollection())
+    ->withType("Expense")
+    ->withSubtype("Operating")
+    ->retrieve();
+```
+
 ### Pagination
 By default, a resource collection will contain (up to) the first 15 results
 from the API call. 
