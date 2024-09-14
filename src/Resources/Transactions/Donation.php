@@ -16,7 +16,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @property ?string        $memo                       Notes about the transaction as a whole
  * @property ?array         $gift                       An array of data on the gift / deductible portion. See relevant setter methods.
  * @property ?array         $nongift                    An array of data on a nongift / nondeductible portion. See relevant setter methods.
- * @property ?array         $fee                        An array of data on fees or processing expenses. See relevant setter methods.
+ * @property ?array         $fees                       An array of data on fees or processing expenses.
  * @property ?array         $tags                       An array of tags to apply to the donation
  * @property ?array         $class_id                   The UUID of the class to apply to the donation
  * @property ?array         $metadata                   Associative array of metadata to associate with the donation
@@ -31,13 +31,11 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @method  Donation setGiftMemo(string $memo)
  * @method  Donation setNongiftAmount(string | float $amount)
  * @method  Donation setNongiftAccountId(string $accountId)
- * @method  Donation setNongiftMemo(string $memo) 
- * @method  Donation setFeeAmount(string | float $amount)
- * @method  Donation setFeeAccountId(string $accountId)
- * @method  Donation setFeeMemo(string $memo)
+ * @method  Donation setNongiftMemo(string $memo)
  * @method  Donation setClassId(string $classId)
  * @method  Donation setTags(array $tagNames)
- * 
+ * @method  Donation setFees(array $fees)
+ *
  * @method  string      getDate()
  * @method  string      getDonorId()
  * @method  string      getAssetAccountId()
@@ -48,9 +46,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @method  null|string getNongiftAmount()
  * @method  null|string getNongiftAccountId()
  * @method  null|string getNongiftMemo()
- * @method  null|string getFeeAmount()
- * @method  null|string getFeeAccountId()
- * @method  null|string getFeeMemo()
+ * @method  null|string getFees()
  * @method  null|string getClassId()
  * @method  null|string getTags()
  */
@@ -60,9 +56,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
 #[AccessibleProperty('NongiftAmount', 'nongift.amount')]
 #[AccessibleProperty('NongiftAccountId', 'nongift.account_id')]
 #[AccessibleProperty('NongiftMemo', 'nongift.memo')]
-#[AccessibleProperty('FeeAmount', 'fee.amount')]
-#[AccessibleProperty('FeeAccountId', 'fee.account_id')]
-#[AccessibleProperty('FeeMemo', 'fee.memo')]
+#[AccessibleProperty('Fees', 'fees')]
 class Donation implements Resource
 {
     use ActsAsResource;
@@ -71,7 +65,46 @@ class Donation implements Resource
     protected array $dates = [
         'date',
     ];
-    
+
+    public function addFee(string | float $amount, string $accountId, string $memo = ''): static
+    {
+        $fees = $this->get('fees') ?? [];
+        $fees[] = [
+            'amount' => $amount,
+            'account_id' => $accountId,
+            'memo' => $memo,
+        ];
+
+        return $this->set('fees', $fees);
+    }
+
+    /**
+     * @deprecated
+     * @see addFee()
+     */
+    public function setFeeAmount(string | float $amount)
+    {
+        return $this->set('fees.0.amount', $amount);
+    }
+
+    /**
+     * @deprecated
+     * @see addFee()
+     */
+    public function setFeeAccountId(string $accountId)
+    {
+        return $this->set('fees.0.account_id', $accountId);
+    }
+
+    /**
+     * @deprecated
+     * @see addFee()
+     */
+    public function setFeeMemo(string $memo)
+    {
+        return $this->set('fees.0.memo', $memo);
+    }
+
     public function getBaseEndpoint(): string
     {
         return $this->apiClient->getBaseUri() . "donations";
