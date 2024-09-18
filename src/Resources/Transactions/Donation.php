@@ -35,6 +35,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @method  Donation setClassId(string $classId)
  * @method  Donation setTags(array $tagNames)
  * @method  Donation setFees(array $fees)
+ * @method  Donation setSendReceipt(bool $shouldSend = true)        Set to false if normal receipt sending should be omitted
  *
  * @method  string      getDate()
  * @method  string      getDonorId()
@@ -57,6 +58,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
 #[AccessibleProperty('NongiftAccountId', 'nongift.account_id')]
 #[AccessibleProperty('NongiftMemo', 'nongift.memo')]
 #[AccessibleProperty('Fees', 'fees')]
+#[AccessibleProperty('SendReceipt', 'send_receipt')]
 class Donation implements Resource
 {
     use ActsAsResource;
