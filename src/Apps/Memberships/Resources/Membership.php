@@ -31,6 +31,8 @@ class Membership implements Resource
      */
     public function getBaseEndpoint(): string
     {
-        return Client::singleton()->getBaseUri() . "entities/{$this->entity->id}/memberships";
+        return isset($this->entity)
+            ? Client::singleton()->getBaseUri() . "entities/{$this->entity->id}/memberships"
+            : Client::singleton()->getBaseUri() . "memberships";
     }
 }
