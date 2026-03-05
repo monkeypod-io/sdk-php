@@ -277,6 +277,13 @@ class Client
             ->withHeaders($headers)
             ->postJson($endpoint, $data);
 
+        // Remove per-request headers so they don't leak to subsequent calls.
+        // Laravel's withHeaders() merges into defaultHeaders on the test case,
+        // causing headers from one call to persist on all future calls.
+        foreach (array_keys($headers) as $header) {
+            $this->testClient->withoutHeader($header);
+        }
+
         $this->broadcastApiCallCompletedEvent($endpoint, "POST", $response);
 
         if ($response->isSuccessful()) {
