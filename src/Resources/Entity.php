@@ -25,6 +25,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @property string                 $organization_name  A company or organization name for the entity (required for non-individuals)
  * @property string                 $website            The entity's website
  * @property string                 $email              The primary email address for the entity (required for individuals unless last name is present)
+ * @property string|null            $date_of_birth      The entity's date of birth (YYYY-MM-DD)
  * @property string                 $address            The entity's street address
  * @property string                 $city               The entity's city
  * @property string                 $state              The entity's state or similar region
