@@ -39,6 +39,9 @@ trait ActsAsResourceCollection
     /** @var array Array of filters to send as query string parameters when retrieving */
     protected array $filters = [];
 
+    /** @var array<int,string> Properties to expand inline on retrieve */
+    protected array $expand = [];
+
     protected ?string $firstPageUrl = null;
 
     protected ?string $prevPageUrl = null;
@@ -103,6 +106,9 @@ trait ActsAsResourceCollection
 
         $queryParams['page'] = $page;
         $queryParams += $this->filters;
+        if (! empty($this->expand)) {
+            $queryParams['expand'] = implode(',', $this->expand);
+        }
         $modifiedQueryString = http_build_query($queryParams);
 
         $endpoint = str($base)
@@ -112,6 +118,20 @@ trait ActsAsResourceCollection
             ->toString();
 
         $this->retrieveUri($endpoint);
+
+        return $this;
+    }
+
+    /**
+     * Request inline expansion of one or more reference fields on the next retrieve.
+     *
+     * @param  string|array<int,string>  $properties
+     */
+    public function expand(string|array $properties): static
+    {
+        $properties = is_array($properties) ? $properties : [$properties];
+
+        $this->expand = array_values(array_unique(array_merge($this->expand, $properties)));
 
         return $this;
     }

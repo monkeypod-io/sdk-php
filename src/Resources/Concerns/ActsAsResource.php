@@ -29,6 +29,9 @@ trait ActsAsResource
 
     protected ?string $idempotencyKey = null;
 
+    /** @var array<int,string> Properties to expand inline on retrieve/create/update */
+    protected array $expand = [];
+
     protected static array $accessibleProperties;
 
     /**
@@ -62,7 +65,7 @@ trait ActsAsResource
      */
     public function create(array $data = []): static
     {
-        $endpoint = $this->getBaseEndpoint();
+        $endpoint = $this->withExpandQuery($this->getBaseEndpoint());
         $data = array_merge_recursive($this->data, $data);
 
         $headers = isset($this->idempotencyKey)
@@ -87,7 +90,7 @@ trait ActsAsResource
      */
     public function retrieve(): static
     {
-        $endpoint = $this->getSpecificEndpoint();
+        $endpoint = $this->withExpandQuery($this->getSpecificEndpoint());
         $response = $this->apiClient->get($endpoint);
 
         $this->data = $response['data'];
@@ -106,13 +109,41 @@ trait ActsAsResource
      */
     public function update(array $data = []): static
     {
-        $endpoint = $this->getSpecificEndpoint();
+        $endpoint = $this->withExpandQuery($this->getSpecificEndpoint());
         $data = array_merge_recursive($this->data, $data);
 
         $this->data = $this->apiClient->put($endpoint, $data)['data'];
         $this->hydrateNestedResources();
 
         return $this;
+    }
+
+    /**
+     * Request inline expansion of one or more reference fields on the next
+     * create/retrieve/update call, e.g. ->expand(['account', 'customer']).
+     *
+     * Mirrors the server's `?expand=` query parameter.
+     *
+     * @param  string|array<int,string>  $properties
+     */
+    public function expand(string|array $properties): static
+    {
+        $properties = is_array($properties) ? $properties : [$properties];
+
+        $this->expand = array_values(array_unique(array_merge($this->expand, $properties)));
+
+        return $this;
+    }
+
+    protected function withExpandQuery(string $endpoint): string
+    {
+        if (empty($this->expand)) {
+            return $endpoint;
+        }
+
+        $separator = str_contains($endpoint, '?') ? '&' : '?';
+
+        return $endpoint . $separator . 'expand=' . implode(',', $this->expand);
     }
 
     /**
