@@ -14,7 +14,7 @@ use MonkeyPod\Api\Resources\Contracts\Resource;
  * @property string     $id             The membership's UUID
  * @property string     $entity_id      The UUID of the associated entity
  * @property string     $level          The membership level
- * @property strung     $cycle          Either "Monthly" or "Annual"
+ * @property string     $cycle         Either "Monthly" or "Annual"
  * @property string     $status         The membership's status
  * @property string     $start_date     The start date
  * @property string     $paid_through   The paid through date
